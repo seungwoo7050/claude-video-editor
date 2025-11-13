@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/upload.routes.js';
+import editRoutes from './routes/edit.routes.js';
 import { StorageService } from './services/storage.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +27,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api', uploadRoutes);
+app.use('/api/edit', editRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
