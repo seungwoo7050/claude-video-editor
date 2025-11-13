@@ -1,9 +1,9 @@
 project: VrewCraft
-version: "0.0.0"
+version: "1.0.0"
 phase:
-  current: null
+  current: "1"
   completed: []
-mvps_completed: []
+mvps_completed: ["1.0"]
 arena60_experience_integrated: false
 initialized_at: "2025-11-13T21:53:13Z"
-last_updated: "2025-11-13T21:53:13Z"
+last_updated: "2025-11-13T23:00:00Z"
