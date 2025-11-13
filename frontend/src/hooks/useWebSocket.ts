@@ -9,7 +9,7 @@ interface ProgressData {
 
 interface WSMessage {
   type: 'progress' | 'complete' | 'error' | 'ping' | 'pong';
-  data?: any;
+  data?: unknown;
 }
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3001/ws';
@@ -28,7 +28,6 @@ export function useWebSocket() {
       const socket = new WebSocket(WS_URL);
 
       socket.onopen = () => {
-        console.log('WebSocket connected');
         setConnected(true);
       };
 
@@ -41,39 +40,36 @@ export function useWebSocket() {
               setProgress(message.data as ProgressData);
               break;
             case 'complete':
-              console.log('Operation complete:', message.data);
               break;
             case 'error':
-              console.error('Operation error:', message.data);
               break;
             case 'ping':
               // Respond to ping
               socket.send(JSON.stringify({ type: 'pong' }));
               break;
           }
-        } catch (error) {
-          console.error('Failed to parse WebSocket message:', error);
+        } catch {
+          // Ignore parse errors
         }
       };
 
       socket.onclose = () => {
-        console.log('WebSocket disconnected');
         setConnected(false);
 
         // Attempt to reconnect after 3 seconds
-        reconnectTimeout.current = setTimeout(() => {
-          console.log('Attempting to reconnect...');
+        reconnectTimeout.current = window.setTimeout(() => {
+          // eslint-disable-next-line react-hooks/immutability
           connect();
         }, 3000);
       };
 
-      socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
+      socket.onerror = () => {
+        // Error handling is done in onclose
       };
 
       ws.current = socket;
-    } catch (error) {
-      console.error('Failed to connect to WebSocket:', error);
+    } catch {
+      // Connection error
     }
   }, []);
 

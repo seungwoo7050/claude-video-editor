@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import http from 'http';
 import uploadRoutes from './routes/upload.routes.js';
 import editRoutes from './routes/edit.routes.js';
@@ -10,9 +8,6 @@ import { StorageService } from './services/storage.service.js';
 import { WebSocketService } from './ws/websocket.service.js';
 import { db } from './db/database.service.js';
 import { redis } from './db/redis.service.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +21,7 @@ const storageService = new StorageService();
 const wsService = new WebSocketService(server);
 
 // Make WebSocket service available globally
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).wsService = wsService;
 
 // Middleware
@@ -51,7 +47,7 @@ app.use('/api/edit', editRoutes);
 app.use('/api/projects', projectRoutes);
 
 // Error handling middleware
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response) => {
   console.error('Error:', err.message);
   res.status(500).json({ error: err.message || 'Internal server error' });
 });

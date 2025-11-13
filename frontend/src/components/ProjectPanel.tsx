@@ -16,14 +16,15 @@ export function ProjectPanel({ video, onProjectLoad }: ProjectPanelProps) {
   const [projectName, setProjectName] = useState('');
   const [showSaveForm, setShowSaveForm] = useState(false);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
   const loadProjects = async () => {
     const fetchedProjects = await getProjects();
     setProjects(fetchedProjects);
   };
+
+  useEffect(() => {
+    loadProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async () => {
     if (!video || !projectName.trim()) {

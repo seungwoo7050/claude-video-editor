@@ -24,24 +24,15 @@ export function ControlPanel({
   const { trimVideo, splitVideo, processing, error } = useVideoEdit();
 
   const [trimStart, setTrimStart] = useState(0);
-  const [trimEnd, setTrimEnd] = useState(0);
-  const [splitTime, setSplitTime] = useState(0);
+  const [trimEnd, setTrimEnd] = useState(duration);
+  const [splitTime, setSplitTime] = useState(duration / 2);
   const [mode, setMode] = useState<'trim' | 'split'>('trim');
 
-  // Update default values when duration changes
+  // Update values when duration changes
   useEffect(() => {
-    if (duration > 0) {
-      setTrimEnd(duration);
-      setSplitTime(duration / 2);
-    }
+    setTrimEnd(duration);
+    setSplitTime(duration / 2);
   }, [duration]);
-
-  // Update trim start when current time changes in trim mode
-  useEffect(() => {
-    if (mode === 'trim') {
-      setTrimStart(currentTime);
-    }
-  }, [currentTime, mode]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds);

@@ -1,7 +1,6 @@
 import ffmpeg from 'fluent-ffmpeg';
 import path from 'path';
 import { promises as fs } from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from './storage.service.js';
 
 /**
@@ -38,6 +37,7 @@ export class FFmpegService {
    * Get WebSocket service for progress broadcasting
    */
   private getWsService() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (global as any).wsService;
   }
 

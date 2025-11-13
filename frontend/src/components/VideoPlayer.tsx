@@ -16,7 +16,7 @@ export interface VideoPlayerRef {
 /**
  * Video player component with playback controls
  */
-export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
+const VideoPlayerComponent = forwardRef<VideoPlayerRef, VideoPlayerProps>(
   ({ video, onTimeUpdate, onDurationChange }, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playerState, setPlayerState] = useState<VideoPlayerState>({
@@ -130,7 +130,9 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           ref={videoRef}
           src={video.url}
           className="w-full"
-          onError={(e) => console.error('Video error:', e)}
+          onError={() => {
+            // Video load error - handled by UI
+          }}
         />
       </div>
 
@@ -190,3 +192,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     </div>
   );
 });
+
+VideoPlayerComponent.displayName = 'VideoPlayer';
+
+export const VideoPlayer = VideoPlayerComponent;

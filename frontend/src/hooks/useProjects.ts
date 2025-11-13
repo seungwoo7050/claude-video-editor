@@ -2,13 +2,19 @@ import { useState } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+export interface TimelineState {
+  currentTime: number;
+  duration: number;
+  [key: string]: unknown;
+}
+
 export interface Project {
   id: number;
   name: string;
   description: string | null;
   video_filename: string;
   video_url: string;
-  timeline_state: any;
+  timeline_state: TimelineState;
   created_at: string;
   updated_at: string;
 }
@@ -18,7 +24,7 @@ export interface CreateProjectParams {
   description?: string;
   videoFilename: string;
   videoUrl: string;
-  timelineState?: any;
+  timelineState?: TimelineState;
 }
 
 /**
