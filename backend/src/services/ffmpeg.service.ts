@@ -1,6 +1,7 @@
 import ffmpeg from 'fluent-ffmpeg';
 import path from 'path';
 import { promises as fs } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from './storage.service.js';
 
 /**
@@ -31,6 +32,28 @@ export class FFmpegService {
 
   constructor(storageService: StorageService) {
     this.storageService = storageService;
+  }
+
+  /**
+   * Get WebSocket service for progress broadcasting
+   */
+  private getWsService() {
+    return (global as any).wsService;
+  }
+
+  /**
+   * Emit progress via WebSocket
+   */
+  private emitProgress(operationId: string, operation: string, progress: number, message?: string) {
+    const ws = this.getWsService();
+    if (ws) {
+      ws.broadcastProgress({
+        operationId,
+        operation,
+        progress,
+        message,
+      });
+    }
   }
 
   /**

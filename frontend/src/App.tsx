@@ -3,8 +3,12 @@ import { VideoUpload } from './components/VideoUpload';
 import { VideoPlayer, VideoPlayerRef } from './components/VideoPlayer';
 import { Timeline } from './components/Timeline';
 import { EditPanel } from './components/EditPanel';
+import { ProjectPanel } from './components/ProjectPanel';
+import { ProgressBar } from './components/ProgressBar';
 import { VideoMetadata } from './types/video';
 import { EditResult } from './types/edit';
+import { useWebSocket } from './hooks/useWebSocket';
+import { Project } from './hooks/useProjects';
 
 function App() {
   const [video, setVideo] = useState<VideoMetadata | null>(null);
@@ -12,6 +16,9 @@ function App() {
   const [duration, setDuration] = useState(0);
   const [processedVideos, setProcessedVideos] = useState<EditResult[]>([]);
   const playerRef = useRef<VideoPlayerRef>(null);
+
+  // WebSocket for real-time progress
+  const { connected, progress } = useWebSocket();
 
   const handleVideoUploaded = (uploadedVideo: VideoMetadata) => {
     setVideo(uploadedVideo);
@@ -43,13 +50,29 @@ function App() {
     setProcessedVideos(results);
   };
 
+  const handleProjectLoad = (project: Project) => {
+    const loadedVideo: VideoMetadata = {
+      url: project.video_url,
+      path: '',
+      filename: project.video_filename,
+      originalName: project.name,
+      size: 0,
+      mimetype: 'video/mp4',
+    };
+    setVideo(loadedVideo);
+    setProcessedVideos([]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto p-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-2">VrewCraft</h1>
           <p className="text-gray-400">Web-Based Video Editor</p>
-          <p className="text-sm text-gray-500 mt-2">Phase 1 - MVP 1.2: Subtitle & Speed</p>
+          <p className="text-sm text-gray-500 mt-2">Phase 1 - MVP 1.3: WebSocket + PostgreSQL</p>
+          {connected && (
+            <div className="mt-2 text-xs text-green-400">● WebSocket Connected</div>
+          )}
         </header>
 
         <div className="space-y-6">
@@ -109,7 +132,7 @@ function App() {
                 </button>
               </div>
 
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 space-y-6">
                 <EditPanel
                   video={video}
                   duration={duration}
@@ -117,10 +140,24 @@ function App() {
                   onEditComplete={handleTrimComplete}
                   onSplitComplete={handleSplitComplete}
                 />
+
+                <ProjectPanel
+                  video={video}
+                  onProjectLoad={handleProjectLoad}
+                />
               </div>
             </div>
           )}
         </div>
+
+        {/* Progress Bar */}
+        {progress && progress.progress < 100 && (
+          <ProgressBar
+            progress={progress.progress}
+            operation={progress.operation}
+            message={progress.message}
+          />
+        )}
       </div>
     </div>
   );
