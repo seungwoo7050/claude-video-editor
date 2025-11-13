@@ -1,4 +1,4 @@
-name: CI
+name: VrewCraft CI
 
 on:
   push:
@@ -8,40 +8,158 @@ on:
 
 jobs:
   frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
-      - name: Lint
-        working-directory: ./frontend
-        run: npm run lint
-      - name: Build
-        working-directory: ./frontend
-        run: npm run build
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: frontend
+      run: npm ci
+
+    - name: Lint
+      working-directory: frontend
+      run: npm run lint
+
+    - name: Type check
+      working-directory: frontend
+      run: npx tsc --noEmit
+
+    - name: Build
+      working-directory: frontend
+      run: npm run build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-dist
+        path: frontend/dist/
 
   backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: vrewcraft_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: Install dependencies
-        working-directory: ./backend
-        run: npm ci
-      - name: Lint
-        working-directory: ./backend
-        run: npm run lint
-      - name: Build
-        working-directory: ./backend
-        run: npm run build
-      - name: Test
-        working-directory: ./backend
-        run: npm test
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: Install FFmpeg
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+
+    - name: Install dependencies
+      working-directory: backend
+      run: npm ci
+
+    - name: Lint
+      working-directory: backend
+      run: npm run lint
+
+    - name: Type check
+      working-directory: backend
+      run: npx tsc --noEmit
+
+    - name: Build
+      working-directory: backend
+      run: npm run build
+
+    - name: Run tests
+      working-directory: backend
+      env:
+        DB_HOST: localhost
+        DB_NAME: vrewcraft_test
+        DB_USER: test
+        DB_PASSWORD: test
+        REDIS_HOST: localhost
+      run: npm test
+
+  native:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install FFmpeg development libraries
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libavformat-dev \
+          libavcodec-dev \
+          libavutil-dev \
+          libswscale-dev \
+          build-essential \
+          python3
+
+    - name: Build native addon
+      working-directory: native
+      run: |
+        npm install node-gyp -g
+        npm install node-addon-api
+        node-gyp configure
+        node-gyp build
+
+    - name: Run valgrind (memory check)
+      run: |
+        sudo apt-get install -y valgrind
+        # Add valgrind test when native module has tests
+
+  integration:
+    needs: [frontend, backend]
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Start services
+      run: docker-compose up -d
+
+    - name: Wait for services
+      run: |
+        sleep 10
+        curl --retry 5 --retry-delay 2 http://localhost:3001/health
+
+    - name: Run E2E tests (placeholder)
+      run: |
+        echo "E2E tests would run here"
+        # Add when E2E tests implemented
+
+    - name: Stop services
+      run: docker-compose down
