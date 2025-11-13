@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { VideoUpload } from './components/VideoUpload';
 import { VideoPlayer, VideoPlayerRef } from './components/VideoPlayer';
 import { Timeline } from './components/Timeline';
-import { ControlPanel } from './components/ControlPanel';
+import { EditPanel } from './components/EditPanel';
 import { VideoMetadata } from './types/video';
 import { EditResult } from './types/edit';
 
@@ -49,7 +49,7 @@ function App() {
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-2">VrewCraft</h1>
           <p className="text-gray-400">Web-Based Video Editor</p>
-          <p className="text-sm text-gray-500 mt-2">Phase 1 - MVP 1.1: Trim & Split</p>
+          <p className="text-sm text-gray-500 mt-2">Phase 1 - MVP 1.2: Subtitle & Speed</p>
         </header>
 
         <div className="space-y-6">
@@ -110,11 +110,11 @@ function App() {
               </div>
 
               <div className="lg:col-span-1">
-                <ControlPanel
+                <EditPanel
                   video={video}
                   duration={duration}
                   currentTime={currentTime}
-                  onTrimComplete={handleTrimComplete}
+                  onEditComplete={handleTrimComplete}
                   onSplitComplete={handleSplitComplete}
                 />
               </div>

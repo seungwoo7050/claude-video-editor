@@ -15,6 +15,15 @@ export interface ProcessingResult {
 }
 
 /**
+ * Subtitle definition
+ */
+export interface Subtitle {
+  text: string;
+  startTime: number;
+  duration: number;
+}
+
+/**
  * FFmpeg service for video processing operations
  */
 export class FFmpegService {
@@ -192,5 +201,127 @@ export class FFmpegService {
         });
       });
     });
+  }
+
+  /**
+   * Add subtitles to video and/or change speed
+   * @param inputPath - Path to input video file
+   * @param subtitles - Array of subtitles to add
+   * @param speed - Playback speed (0.5 to 2.0)
+   * @returns Processing result with output file info
+   */
+  async addSubtitlesAndSpeed(
+    inputPath: string,
+    subtitles: Subtitle[],
+    speed?: number
+  ): Promise<ProcessingResult> {
+    const outputFilename = `processed-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(inputPath)}`;
+    const outputPath = this.storageService.getFilePath(outputFilename);
+
+    // Create SRT subtitle file if subtitles provided
+    let subtitlePath: string | null = null;
+    if (subtitles.length > 0) {
+      subtitlePath = this.storageService.getFilePath(`temp-${Date.now()}.srt`);
+      const srtContent = this.generateSRT(subtitles);
+      await fs.writeFile(subtitlePath, srtContent, 'utf-8');
+    }
+
+    return new Promise((resolve, reject) => {
+      let command = ffmpeg(inputPath);
+
+      // Apply speed filter if specified
+      const filters: string[] = [];
+      if (speed && speed !== 1.0) {
+        // Video speed filter
+        filters.push(`setpts=${1 / speed}*PTS`);
+      }
+
+      // Add subtitle filter if subtitles provided
+      if (subtitlePath) {
+        // Burn subtitles into video
+        const escapedPath = subtitlePath.replace(/\\/g, '/').replace(/:/g, '\\:');
+        filters.push(`subtitles='${escapedPath}':force_style='Alignment=2,MarginV=20,FontSize=24'`);
+      }
+
+      if (filters.length > 0) {
+        command = command.videoFilters(filters);
+      }
+
+      // Apply audio speed if specified
+      if (speed && speed !== 1.0) {
+        command = command.audioFilters([`atempo=${speed}`]);
+      }
+
+      command
+        .output(outputPath)
+        .on('end', async () => {
+          // Clean up temp subtitle file
+          if (subtitlePath) {
+            try {
+              await fs.unlink(subtitlePath);
+            } catch {
+              // Ignore cleanup errors
+            }
+          }
+
+          try {
+            const stats = await fs.stat(outputPath);
+            resolve({
+              filename: outputFilename,
+              path: outputPath,
+              url: `/videos/${outputFilename}`,
+              size: stats.size,
+            });
+          } catch (error) {
+            reject(error);
+          }
+        })
+        .on('error', async (err) => {
+          // Clean up temp subtitle file on error
+          if (subtitlePath) {
+            try {
+              await fs.unlink(subtitlePath);
+            } catch {
+              // Ignore cleanup errors
+            }
+          }
+          reject(new Error(`FFmpeg processing error: ${err.message}`));
+        })
+        .run();
+    });
+  }
+
+  /**
+   * Generate SRT subtitle file content
+   * @param subtitles - Array of subtitles
+   * @returns SRT format string
+   */
+  private generateSRT(subtitles: Subtitle[]): string {
+    return subtitles
+      .map((sub, index) => {
+        const start = this.formatSRTTime(sub.startTime);
+        const end = this.formatSRTTime(sub.startTime + sub.duration);
+
+        return `${index + 1}\n${start} --> ${end}\n${sub.text}\n`;
+      })
+      .join('\n');
+  }
+
+  /**
+   * Format time in SRT format (HH:MM:SS,mmm)
+   * @param seconds - Time in seconds
+   * @returns SRT formatted time string
+   */
+  private formatSRTTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    const millis = Math.floor((seconds % 1) * 1000);
+
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}:${secs.toString().padStart(2, '0')},${millis
+      .toString()
+      .padStart(3, '0')}`;
   }
 }

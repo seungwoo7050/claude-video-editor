@@ -130,4 +130,59 @@ router.get('/metadata/:filename', async (req: Request, res: Response): Promise<v
   }
 });
 
+/**
+ * Process video with subtitles and/or speed change
+ * POST /api/edit/process
+ * Body: { filename: string, subtitles?: Subtitle[], speed?: number }
+ */
+router.post('/process', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { filename, subtitles, speed } = req.body;
+
+    if (!filename) {
+      res.status(400).json({ error: 'Missing required field: filename' });
+      return;
+    }
+
+    if (!subtitles && !speed) {
+      res.status(400).json({
+        error: 'At least one of subtitles or speed must be provided',
+      });
+      return;
+    }
+
+    if (speed && (speed < 0.5 || speed > 2.0)) {
+      res.status(400).json({
+        error: 'Speed must be between 0.5 and 2.0',
+      });
+      return;
+    }
+
+    const inputPath = storageService.getFilePath(filename);
+    const fileExists = await storageService.fileExists(filename);
+
+    if (!fileExists) {
+      res.status(404).json({ error: 'Video file not found' });
+      return;
+    }
+
+    const result = await ffmpegService.addSubtitlesAndSpeed(
+      inputPath,
+      subtitles || [],
+      speed
+    );
+
+    // Include API URL in response
+    const apiUrl = process.env.API_URL || 'http://localhost:3001';
+    res.json({
+      ...result,
+      url: `${apiUrl}${result.url}`,
+    });
+  } catch (error) {
+    console.error('Process error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to process video';
+    res.status(500).json({ error: errorMessage });
+  }
+});
+
 export default router;
