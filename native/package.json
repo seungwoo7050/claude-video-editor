@@ -1,0 +1,29 @@
+{
+  "name": "vrewcraft-native",
+  "version": "1.0.0",
+  "description": "VrewCraft C++ Native Addon for high-performance video processing",
+  "main": "build/Release/video_processor.node",
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "build:debug": "node-gyp rebuild --debug",
+    "clean": "node-gyp clean",
+    "configure": "node-gyp configure",
+    "test": "node test/test.js"
+  },
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "^7.0.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "keywords": [
+    "video",
+    "ffmpeg",
+    "native",
+    "n-api",
+    "performance"
+  ],
+  "author": "VrewCraft",
+  "license": "MIT"
+}

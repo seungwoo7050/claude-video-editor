@@ -4,10 +4,14 @@ import http from 'http';
 import uploadRoutes from './routes/upload.routes.js';
 import editRoutes from './routes/edit.routes.js';
 import projectRoutes from './routes/project.routes.js';
+import thumbnailRoutes from './routes/thumbnail.js';
+import metadataRoutes from './routes/metadata.js';
+import metricsRoutes from './routes/metrics.js';
 import { StorageService } from './services/storage.service.js';
 import { WebSocketService } from './ws/websocket.service.js';
 import { db } from './db/database.service.js';
 import { redis } from './db/redis.service.js';
+import { nativeVideoService } from './services/native-video.service.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +42,10 @@ app.get('/health', (_req, res) => {
     service: 'vrewcraft-backend',
     websocket: {
       connected: wsService.getClientCount(),
+    },
+    native: {
+      available: nativeVideoService.isAvailable(),
+      version: nativeVideoService.isAvailable() ? nativeVideoService.getVersion() : 'n/a',
     }
   });
 });
@@ -45,6 +53,11 @@ app.get('/health', (_req, res) => {
 app.use('/api', uploadRoutes);
 app.use('/api/edit', editRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/thumbnail', thumbnailRoutes);
+app.use('/api/metadata', metadataRoutes);
+
+// Prometheus metrics endpoint
+app.use('/metrics', metricsRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: express.Request, res: express.Response) => {
