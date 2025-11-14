@@ -6,8 +6,6 @@
 import express, { Request, Response } from 'express';
 import { nativeVideoService } from '../services/native-video.service';
 import { metricsService } from '../services/metrics.service';
-import path from 'path';
-import fs from 'fs';
 
 const router = express.Router();
 

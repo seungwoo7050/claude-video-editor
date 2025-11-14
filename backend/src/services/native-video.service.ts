@@ -89,6 +89,7 @@ class NativeVideoService {
     for (const modulePath of possiblePaths) {
       try {
         if (fs.existsSync(modulePath)) {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           this.nativeModule = require(modulePath);
           console.log(`[NativeVideoService] Loaded native module from: ${modulePath}`);
           console.log(`[NativeVideoService] Version: ${this.nativeModule!.getVersion()}`);
@@ -208,6 +209,7 @@ class NativeVideoService {
    */
   public static isCodecSupported(codecName: string): boolean {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const nativeModule = require(
         path.join(__dirname, '../../../native/build/Release/video_processor.node')
       ) as NativeVideoProcessor;

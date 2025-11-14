@@ -79,12 +79,20 @@ MetadataAnalyzer::VideoMetadata MetadataAnalyzer::extract_metadata(const std::st
       audio_info.codec_long_name = desc ? desc->long_name : "";
 
       audio_info.sample_rate = codecpar->sample_rate;
-      audio_info.channels = codecpar->ch_layout.nb_channels;
       audio_info.bitrate = codecpar->bit_rate;
 
-      // Get channel layout name
+      // Get channel info - compatible with both old and new FFmpeg API
       char layout_name[256];
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
+      // FFmpeg 5.0+ with new channel layout API
+      audio_info.channels = codecpar->ch_layout.nb_channels;
       av_channel_layout_describe(&codecpar->ch_layout, layout_name, sizeof(layout_name));
+#else
+      // FFmpeg 4.x with old channel layout API
+      audio_info.channels = codecpar->channels;
+      av_get_channel_layout_string(layout_name, sizeof(layout_name),
+                                     codecpar->channels, codecpar->channel_layout);
+#endif
       audio_info.channel_layout = layout_name;
 
       metadata.audio_streams.push_back(audio_info);
