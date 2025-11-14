@@ -4,8 +4,8 @@
  */
 
 import express, { Request, Response } from 'express';
-import { nativeVideoService } from '../services/native-video.service';
-import { metricsService } from '../services/metrics.service';
+import { nativeVideoService } from '../services/native-video.service.js';
+import { metricsService } from '../services/metrics.service.js';
 
 const router = express.Router();
 
@@ -67,7 +67,7 @@ router.post('/', async (req: Request, res: Response) => {
     // In production, you would convert to JPEG/PNG
     res.set('Content-Type', 'application/octet-stream');
     res.set('Content-Disposition', `attachment; filename="thumbnail-${timestamp}s.rgb"`);
-    res.send(thumbnailBuffer);
+    return res.send(thumbnailBuffer);
 
   } catch (err) {
     // Record error metrics
@@ -76,7 +76,7 @@ router.post('/', async (req: Request, res: Response) => {
     metricsService.recordError('thumbnail', err instanceof Error ? err.name : 'UnknownError');
 
     console.error('[Thumbnail] Error:', err);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Failed to extract thumbnail',
       message: err instanceof Error ? err.message : 'Unknown error',
     });
@@ -96,11 +96,11 @@ router.get('/stats', (req: Request, res: Response) => {
     }
 
     const stats = nativeVideoService.getThumbnailStats();
-    res.json(stats);
+    return res.json(stats);
 
   } catch (err) {
     console.error('[Thumbnail Stats] Error:', err);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Failed to get thumbnail stats',
       message: err instanceof Error ? err.message : 'Unknown error',
     });

@@ -3,7 +3,7 @@
  */
 
 import express, { Request, Response } from 'express';
-import { metricsService } from '../services/metrics.service';
+import { metricsService } from '../services/metrics.service.js';
 
 const router = express.Router();
 
@@ -16,10 +16,10 @@ router.get('/', async (req: Request, res: Response) => {
     const metrics = await metricsService.getMetrics();
 
     res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
-    res.send(metrics);
+    return res.send(metrics);
   } catch (err) {
     console.error('[Metrics] Error:', err);
-    res.status(500).send('Error generating metrics');
+    return res.status(500).send('Error generating metrics');
   }
 });
 

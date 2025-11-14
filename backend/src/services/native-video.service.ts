@@ -95,8 +95,8 @@ class NativeVideoService {
           console.log(`[NativeVideoService] Version: ${this.nativeModule!.getVersion()}`);
 
           // Initialize instances
-          this.thumbnailExtractor = new this.nativeModule.ThumbnailExtractor();
-          this.metadataAnalyzer = new this.nativeModule.MetadataAnalyzer();
+          this.thumbnailExtractor = new this.nativeModule!.ThumbnailExtractor();
+          this.metadataAnalyzer = new this.nativeModule!.MetadataAnalyzer();
 
           return;
         }
@@ -223,6 +223,9 @@ class NativeVideoService {
 
 // Singleton instance
 export const nativeVideoService = new NativeVideoService();
+
+// Export class for static methods
+export { NativeVideoService };
 
 export type {
   VideoMetadata,

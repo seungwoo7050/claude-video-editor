@@ -4,8 +4,8 @@
  */
 
 import express, { Request, Response } from 'express';
-import { nativeVideoService } from '../services/native-video.service';
-import { metricsService } from '../services/metrics.service';
+import { nativeVideoService, NativeVideoService } from '../services/native-video.service.js';
+import { metricsService } from '../services/metrics.service.js';
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.post('/', async (req: Request, res: Response) => {
     const duration = (Date.now() - startTime) / 1000; // Convert to seconds
     metricsService.recordMetadataExtraction(duration, true);
 
-    res.json({
+    return res.json({
       success: true,
       metadata,
     });
@@ -55,7 +55,7 @@ router.post('/', async (req: Request, res: Response) => {
     metricsService.recordError('metadata', err instanceof Error ? err.name : 'UnknownError');
 
     console.error('[Metadata] Error:', err);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Failed to extract metadata',
       message: err instanceof Error ? err.message : 'Unknown error',
     });
@@ -74,16 +74,16 @@ router.get('/codec/:codecName', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'codecName is required' });
     }
 
-    const supported = nativeVideoService.constructor['isCodecSupported'](codecName);
+    const supported = NativeVideoService.isCodecSupported(codecName);
 
-    res.json({
+    return res.json({
       codec: codecName,
       supported,
     });
 
   } catch (err) {
     console.error('[Codec Check] Error:', err);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Failed to check codec support',
       message: err instanceof Error ? err.message : 'Unknown error',
     });
