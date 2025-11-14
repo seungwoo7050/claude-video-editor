@@ -1,0 +1,52 @@
+# Production Dockerfile for backend
+FROM node:20-alpine
+
+# Install FFmpeg and build tools for native addon
+RUN apk add --no-cache \
+    ffmpeg \
+    ffmpeg-dev \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    linux-headers
+
+WORKDIR /app
+
+# Copy and install native addon dependencies first
+COPY native/package*.json ./native/
+WORKDIR /app/native
+RUN npm ci --only=production
+
+# Copy native addon source and build
+COPY native ./
+RUN npm run build
+
+# Copy and install backend dependencies
+WORKDIR /app
+COPY backend/package*.json ./
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+# Copy backend source
+COPY backend ./
+
+# Build TypeScript
+RUN npm run build
+
+# Create directories for uploads and outputs
+RUN mkdir -p /app/uploads /app/outputs && \
+    chown -R node:node /app
+
+# Switch to non-root user for security
+USER node
+
+# Expose ports
+EXPOSE 3001 3002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3001/health', (r) => {if(r.statusCode !== 200) process.exit(1)})" || exit 1
+
+# Start application
+CMD ["npm", "run", "start"]
