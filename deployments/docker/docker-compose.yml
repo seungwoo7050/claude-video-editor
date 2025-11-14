@@ -22,6 +22,7 @@ services:
       - ../../backend:/app
       - /app/node_modules
       - /app/native  # Preserve built native addon
+      - /app/dist    # Preserve built TypeScript
       - ../../backend/uploads:/app/uploads
       - ../../backend/outputs:/app/outputs
     environment:
