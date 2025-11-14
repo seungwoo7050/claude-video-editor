@@ -12,7 +12,9 @@ services:
       - VITE_API_URL=http://localhost:3001
 
   backend:
-    build: ../../backend
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
     ports:
       - "3001:3001"
       - "3002:3002"  # WebSocket

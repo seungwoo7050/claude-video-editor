@@ -13,17 +13,17 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Install backend dependencies
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm install
 
 # Build native addon
-COPY ../native /app/native
+COPY native /app/native
 WORKDIR /app/native
 RUN npm install && npm run build
 
 # Copy backend source
 WORKDIR /app
-COPY . .
+COPY backend .
 
 EXPOSE 3001 3002
 
