@@ -50,30 +50,60 @@ VrewCraft is a full-stack web video editor built to demonstrate:
 
 ### Option 1: Docker Deployment (Recommended)
 
+**Development Mode**:
 ```bash
 # Clone repository
 git clone https://github.com/seungwoo7050/claude-video-editor.git
 cd claude-video-editor
 
-# Start all services
+# Start all services (development mode with hot reload)
 cd deployments/docker
 docker-compose up -d
 
 # Wait for services to initialize (~30 seconds)
-# Then access:
+```
+
+**Production Mode**:
+```bash
+# Clone repository
+git clone https://github.com/seungwoo7050/claude-video-editor.git
+cd claude-video-editor/deployments/docker
+
+# Configure environment
+cp .env.example .env
+# Edit .env and change default passwords!
+
+# Start all services (production mode with optimized builds)
+docker-compose -f docker-compose.prod.yml up -d
+
+# Wait for services to initialize (~60 seconds for initial build)
 ```
 
 **Service URLs**:
+
+Development:
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3001
 - **Grafana Dashboard**: http://localhost:3000 (admin/admin)
 - **Prometheus**: http://localhost:9090
 - **WebSocket**: ws://localhost:3002
 
+Production:
+- **Frontend**: http://localhost:80
+- **Backend API**: http://localhost:3001
+- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
+- **Prometheus**: http://localhost:9090
+
 **Stop services**:
 ```bash
+# Development
 docker-compose down
+
+# Production
+docker-compose -f docker-compose.prod.yml down
 ```
+
+**Deployment Guide**: See [deployments/docker/README.md](deployments/docker/README.md) for detailed instructions
 
 ### Option 2: Local Development
 
