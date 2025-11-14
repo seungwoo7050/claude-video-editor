@@ -25,6 +25,9 @@ RUN npm install && npm run build
 WORKDIR /app
 COPY backend .
 
+# Build TypeScript
+RUN npm run build
+
 EXPOSE 3001 3002
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
