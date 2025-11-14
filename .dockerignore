@@ -1,0 +1,34 @@
+# Node modules (will be installed in container)
+backend/node_modules
+frontend/node_modules
+native/node_modules
+native/build
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+backend/dist
+frontend/dist
+
+# Uploads and outputs (runtime generated)
+backend/uploads
+backend/outputs
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs
+README.md
+
+# IDE
+.vscode
+.idea
