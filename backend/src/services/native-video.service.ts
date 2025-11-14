@@ -50,17 +50,20 @@ interface VideoMetadata {
   audioStreams: AudioStreamInfo[];
 }
 
+interface MetadataAnalyzerConstructor {
+  new (): {
+    extractMetadata(videoPath: string): VideoMetadata;
+  };
+  isCodecSupported(codecName: string): boolean;
+}
+
 interface NativeVideoProcessor {
   getVersion(): string;
   ThumbnailExtractor: new () => {
     extractThumbnail(videoPath: string, timestamp: number, width?: number, height?: number): Buffer;
     getStats(): ThumbnailExtractorStats;
   };
-  MetadataAnalyzer: new () => {
-    extractMetadata(videoPath: string): VideoMetadata;
-  } & {
-    isCodecSupported(codecName: string): boolean;
-  };
+  MetadataAnalyzer: MetadataAnalyzerConstructor;
 }
 
 class NativeVideoService {
