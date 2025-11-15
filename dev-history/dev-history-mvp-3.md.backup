@@ -53,7 +53,7 @@
 - 매번 배포마다 datasource 추가, dashboard import 반복
 - 포트폴리오 데모 시 번거로움
 
-**선택의 순간 #165**: Grafana 설정 방식
+**선택의 순간 #1**: Grafana 설정 방식
 - **대안들**:
   - **수동 설정**: 배포 후 웹 UI에서 설정
   - **환경변수**: 제한적, dashboard는 불가
@@ -82,7 +82,7 @@ datasources:
     editable: true
 ```
 
-**선택의 순간 #166**: Datasource URL
+**선택의 순간 #2**: Datasource URL
 - **고려사항**: `localhost:9090` vs `prometheus:9090`
 - **결정**: `prometheus:9090` (서비스명)
 - **이유**: 
@@ -90,7 +90,7 @@ datasources:
   - `localhost`는 Grafana 컨테이너 자신을 가리킴
   - 서비스명은 Docker DNS가 자동 해석
 
-**선택의 순간 #167**: `isDefault: true`
+**선택의 순간 #3**: `isDefault: true`
 - **대안**: 여러 datasource 중 선택
 - **결정**: Prometheus를 기본으로 설정
 - **이유**: 
@@ -117,7 +117,7 @@ providers:
       path: /var/lib/grafana/dashboards
 ```
 
-**선택의 순간 #168**: `disableDeletion: false`
+**선택의 순간 #4**: `disableDeletion: false`
 - **대안**: `true` (읽기 전용)
 - **결정**: `false` (수정 가능)
 - **이유**: 
@@ -125,7 +125,7 @@ providers:
   - 사용자가 커스터마이징 가능
   - 프로덕션에서는 `true`로 변경 예정
 
-**선택의 순간 #169**: `updateIntervalSeconds: 10`
+**선택의 순간 #5**: `updateIntervalSeconds: 10`
 - **대안**: 60초 (느림), 1초 (과도함)
 - **결정**: 10초
 - **이유**: 
@@ -155,7 +155,7 @@ grafana:
     - prometheus  # 신규
 ```
 
-**선택의 순간 #170**: Volume Mount 경로
+**선택의 순간 #6**: Volume Mount 경로
 - **Provisioning**: `/etc/grafana/provisioning` (Grafana 표준)
 - **Dashboards**: `/var/lib/grafana/dashboards` (커스텀)
 - **이유**: 
@@ -163,7 +163,7 @@ grafana:
   - provisioning 파일은 설정 디렉토리
   - dashboard JSON은 데이터 디렉토리
 
-**선택의 순간 #171**: `GF_USERS_ALLOW_SIGN_UP=false`
+**선택의 순간 #7**: `GF_USERS_ALLOW_SIGN_UP=false`
 - **대안**: `true` (누구나 가입 가능)
 - **결정**: `false`
 - **이유**: 
@@ -171,7 +171,7 @@ grafana:
   - 보안 (불필요한 계정 생성 방지)
   - 프로덕션 준비 설정
 
-**선택의 순간 #172**: `depends_on: prometheus`
+**선택의 순간 #8**: `depends_on: prometheus`
 - **필요성**: Grafana가 Prometheus보다 먼저 시작하면?
 - **결정**: 명시적 의존성 선언
 - **이유**: 
@@ -209,7 +209,7 @@ grafana:
 - Quick start만 존재 (아키텍처, 성능 없음)
 - Voyager X 정렬 명시 안 됨
 
-**선택의 순간 #173**: README 개편 전략
+**선택의 순간 #9**: README 개편 전략
 - **대안들**:
   - **Minimal**: 50-100줄 (기본만)
   - **Standard**: 200-300줄 (일반적)
@@ -222,7 +222,7 @@ grafana:
 
 #### Step 2: 목차 구조 설계
 
-**선택의 순간 #174**: README 섹션 순서
+**선택의 순간 #10**: README 섹션 순서
 ```markdown
 1. Overview (프로젝트 정체성)
 2. Project Status (진행 상황)
@@ -251,7 +251,7 @@ grafana:
    - 4가지 증명 포인트
    - Target audience 명시
 
-**선택의 순간 #175**: 한 줄 요약 문구
+**선택의 순간 #11**: 한 줄 요약 문구
 - **대안들**:
   - "Web video editor" (평범)
   - "High-performance video editor" (추상적)
@@ -268,7 +268,7 @@ grafana:
    - 체크마크 시각적 효과
    - 버전 및 날짜 명시
 
-**선택의 순간 #176**: 상태 표시 방식
+**선택의 순간 #12**: 상태 표시 방식
 - **대안**: "Complete", "Done", "Finished"
 - **결정**: "✅ Complete" (이모지 + 텍스트)
 - **이유**: 
@@ -281,7 +281,7 @@ grafana:
 2. Option 1: Docker (권장)
 3. Option 2: Local Development
 
-**선택의 순간 #177**: Docker를 Option 1로
+**선택의 순간 #13**: Docker를 Option 1로
 - **대안**: Local development를 먼저
 - **결정**: Docker 먼저 + "Recommended" 태그
 - **이유**: 
@@ -300,7 +300,7 @@ cd deployments/docker
 docker-compose up -d
 ```
 
-**선택의 순간 #178**: 주석 스타일
+**선택의 순간 #14**: 주석 스타일
 - **대안**: 주석 없음, 인라인 설명
 - **결정**: 간결한 주석 (한 줄)
 - **이유**: 
@@ -312,7 +312,7 @@ docker-compose up -d
 1. Phase 1 features (Web editing)
 2. Phase 2 features (C++ performance)
 
-**선택의 순간 #179**: Feature 설명 깊이
+**선택의 순간 #15**: Feature 설명 깊이
 - **얕게**: "Trim, split, subtitle" (3줄)
 - **깊게**: 각 feature별 bullet points + 성능 수치
 - **결정**: 깊게 (각 feature 5-10줄)
@@ -336,7 +336,7 @@ docker-compose up -d
 2. Component breakdown
 3. Data flow example
 
-**선택의 순간 #180**: 다이어그램 스타일
+**선택의 순간 #16**: 다이어그램 스타일
 - **대안들**:
   - 이미지 (PNG/SVG)
   - Mermaid (GitHub 지원)
@@ -361,7 +361,7 @@ docker-compose up -d
               └──────────┘ └────────┘ └────────────┘
 ```
 
-**선택의 순간 #181**: 박스 스타일
+**선택의 순간 #17**: 박스 스타일
 - **Single line**: `+-----+`
 - **Double line**: `╔═════╗`
 - **Unicode box**: `┌─────┐` (선택됨)
@@ -375,7 +375,7 @@ docker-compose up -d
 2. Benchmark 요약
 3. Performance report 링크
 
-**선택의 순간 #182**: 성능 수치 표현
+**선택의 순간 #18**: 성능 수치 표현
 - **대안들**:
   - "Fast" (모호함)
   - "< 50ms" (구체적)
@@ -401,7 +401,7 @@ docker-compose up -d
 5. 100% Voyager X Tech Stack Match
 6. Competitive Advantages
 
-**선택의 순간 #183**: 비교 테이블 (Most Developers vs VrewCraft)
+**선택의 순간 #19**: 비교 테이블 (Most Developers vs VrewCraft)
 ```markdown
 | Most Developers | VrewCraft |
 |-----------------|-----------|
@@ -422,7 +422,7 @@ docker-compose up -d
 2. Portfolio Value 명시
 3. 100% match 강조
 
-**선택의 순간 #184**: 한국어 요구사항 직접 인용
+**선택의 순간 #20**: 한국어 요구사항 직접 인용
 ```markdown
 | Requirement | Evidence | Status |
 |-------------|----------|--------|
@@ -450,7 +450,7 @@ docker-compose up -d
 10. Development (개발자용)
 11. Monitoring (운영)
 
-**선택의 순간 #185**: 작성 순서 != 최종 순서
+**선택의 순간 #21**: 작성 순서 != 최종 순서
 - **이유**: 
   - 핵심부터 작성 (동기 부여)
   - 기술적 섹션은 나중 (집중력 필요)
@@ -472,7 +472,7 @@ docker-compose up -d
 - **How가 부족**: 구현 디테일 없음
 - **Trade-off 언급 없음**: 모든 선택에는 대가가 있는데 설명 안 함
 
-**선택의 순간 #186**: Architecture 문서 목적
+**선택의 순간 #22**: Architecture 문서 목적
 - **대안들**:
   - **High-level only**: 시스템 개요만
   - **Deep-dive**: 코드 레벨 설명
@@ -497,7 +497,7 @@ docker-compose up -d
 
 #### Step 3: System Architecture 다이어그램
 
-**선택의 순간 #187**: 다이어그램 레벨
+**선택의 순간 #23**: 다이어그램 레벨
 - **L1**: 매우 추상적 (사용자 → 시스템)
 - **L2**: 컴포넌트 수준 (Frontend, Backend, DB)
 - **L3**: 서비스 수준 (각 서비스의 내부 모듈)
@@ -543,7 +543,7 @@ docker-compose up -d
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**선택의 순간 #188**: 박스 계층 표현
+**선택의 순간 #24**: 박스 계층 표현
 - **들여쓰기**: 공백으로 계층 표현
 - **중첩 박스**: 박스 안에 박스
 - **결정**: 중첩 박스
@@ -570,7 +570,7 @@ docker-compose up -d
    - Time ruler, markers, and selection overlay
 ```
 
-**선택의 순간 #189**: Design Decision 형식
+**선택의 순간 #25**: Design Decision 형식
 - **대안**: 산문체 설명
 - **결정**: 번호 + 제목 + Bullet points
 - **이유**: 
@@ -586,7 +586,7 @@ docker-compose up -d
 - Memory pool 패턴
 - N-API ObjectWrap
 
-**선택의 순간 #190**: 코드 예제 포함 여부
+**선택의 순간 #26**: 코드 예제 포함 여부
 - **대안**: 텍스트 설명만
 - **결정**: 실제 C++ 코드 포함
 - **이유**: 
@@ -617,7 +617,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 3. Thumbnail Extraction Flow (25줄)
 4. Project Save/Load Flow (생략, 지면 관계)
 
-**선택의 순간 #191**: 플로우차트 스타일
+**선택의 순간 #27**: 플로우차트 스타일
 - **Sequence diagram**: 시간 순서
 - **Flowchart**: 의사 결정
 - **Step-by-step**: 번호 + 화살표
@@ -662,7 +662,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 - Why PostgreSQL + Redis?
 - Why Prometheus + Grafana?
 
-**선택의 순간 #192**: 정당화 형식
+**선택의 순간 #28**: 정당화 형식
 ```markdown
 ### Why C++ Native Addon?
 
@@ -685,7 +685,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 2. **Justification** (왜 이 선택인가)
 3. **Alignment** (왜 Voyager X에 맞는가)
 
-**선택의 순간 #193**: 수치 포함 여부
+**선택의 순간 #29**: 수치 포함 여부
 - **대안**: "느리다" (모호)
 - **결정**: "20-30ms overhead" (구체적)
 - **이유**: 
@@ -705,7 +705,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 
 **목표**: 800+ 줄의 포괄적 성능 보고서
 
-**선택의 순간 #194**: 성능 보고서 접근법
+**선택의 순간 #30**: 성능 보고서 접근법
 - **대안들**:
   - **최종 결과만**: p99 48ms (끝)
   - **벤치마크만**: 여러 테스트 결과 나열
@@ -718,7 +718,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 
 #### Step 2: Executive Summary 작성
 
-**선택의 순간 #195**: 첫 문단 구조
+**선택의 순간 #31**: 첫 문단 구조
 - **대안**:
   - 결과부터: "모든 KPI 달성"
   - 방법부터: "C++ 사용하여..."
@@ -738,7 +738,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 ...
 ```
 
-**선택의 순간 #196**: "Estimated Actual" 용어
+**선택의 순간 #32**: "Estimated Actual" 용어
 - **대안**: "Actual", "Measured", "Result"
 - **결정**: "Estimated Actual"
 - **이유**: 
@@ -754,7 +754,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
    - 최적화 설명
    - 검증 명령어
 
-**선택의 순간 #197**: 벤치마크 테이블 항목
+**선택의 순간 #33**: 벤치마크 테이블 항목
 ```markdown
 File Size | p50  | p95  | p99  | Status
 ----------|------|------|------|--------
@@ -781,7 +781,7 @@ File Size | p50  | p95  | p99  | Status
    - Performance breakdown (작업별 시간)
    - Cache performance
 
-**선택의 순간 #198**: 성능 분해 (Performance Breakdown)
+**선택의 순간 #34**: 성능 분해 (Performance Breakdown)
 ```markdown
 Operation          | Time | % of Total
 -------------------|------|------------
@@ -811,7 +811,7 @@ Total              | 15ms | 100%
 2. Metadata Load Test (40줄)
 3. Combined Load Test (40줄)
 
-**선택의 순간 #199**: Load Test Script 포함 여부
+**선택의 순간 #35**: Load Test Script 포함 여부
 ```javascript
 // native/test/load-tests/thumbnail-load-test.js
 const requests = 100;
@@ -839,7 +839,7 @@ for (let i = 0; i < requests; i++) {
 2. C++ Native Addon Memory (30줄)
 3. Frontend Memory (20줄)
 
-**선택의 순간 #200**: Valgrind 출력 포함
+**선택의 순간 #36**: Valgrind 출력 포함
 ```bash
 HEAP SUMMARY:
     in use at exit: 0 bytes in 0 blocks
@@ -857,7 +857,7 @@ All heap blocks were freed -- no leaks are possible
 
 **Before/After 비교** (80줄):
 
-**선택의 순간 #201**: 최적화 효과 표현
+**선택의 순간 #37**: 최적화 효과 표현
 ```markdown
 **Timeline Rendering**:
 - **Before**: DOM manipulation (react-virtualized)
@@ -883,7 +883,7 @@ All heap blocks were freed -- no leaks are possible
 2. Example Queries (30줄)
 3. Grafana Dashboard (50줄)
 
-**선택의 순간 #202**: PromQL 쿼리 포함
+**선택의 순간 #38**: PromQL 쿼리 포함
 ```promql
 # Thumbnail p99 latency (5-minute window)
 histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
@@ -914,7 +914,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
    - CDN
    - Microservices
 
-**선택의 순간 #203**: 미래 최적화 포함 이유
+**선택의 순간 #39**: 미래 최적화 포함 이유
 - **대안**: 현재 성능만 (완벽하다고)
 - **결정**: 개선 여지 명시
 - **이유**: 
@@ -928,7 +928,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
 
 #### Step 1: Demo Video 필요성 판단
 
-**선택의 순간 #204**: Video vs Guide
+**선택의 순간 #40**: Video vs Guide
 - **대안들**:
   - **실제 비디오**: 5분 영상 녹화 (YouTube)
   - **가이드만**: 스크립트 + 체크리스트
@@ -941,7 +941,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
 
 #### Step 2: 6-Segment 구조 설계
 
-**선택의 순간 #205**: 세그먼트 분할
+**선택의 순간 #41**: 세그먼트 분할
 ```
 1. Introduction (0:30) - 프로젝트 정체성
 2. Docker Deployment (1:00) - 배포 시연
@@ -986,7 +986,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
    - Show "0 bytes in 0 blocks" ✅
 ```
 
-**선택의 순간 #206**: 실제 명령어 포함
+**선택의 순간 #42**: 실제 명령어 포함
 - **대안**: "부하 테스트를 실행합니다"
 - **결정**: `node thumbnail-load-test.js` (정확한 명령어)
 - **이유**: 
@@ -1003,7 +1003,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
 - [ ] Test microphone
 - ...
 
-**선택의 순간 #207**: Checklist 상세 수준
+**선택의 순간 #43**: Checklist 상세 수준
 - **대안**: "준비 완료"
 - **결정**: 15개 구체적 항목
 - **이유**: 
@@ -1020,7 +1020,7 @@ histogram_quantile(0.99, rate(vrewcraft_thumbnail_duration_seconds_bucket[5m]))
 4. Monitoring (5장)
 5. Architecture (5장)
 
-**선택의 순간 #208**: 대안 제공 이유
+**선택의 순간 #44**: 대안 제공 이유
 - **이유**: 
   - 시간 제약 (영상 못 만들어도 OK)
   - 다양한 선호 (일부는 텍스트+이미지 선호)
@@ -1040,7 +1040,7 @@ docs/evidence/phase-3/
 └── PHASE-SUMMARY.md (543줄)
 ```
 
-**선택의 순간 #209**: Acceptance Checklist 작성 시점
+**선택의 순간 #45**: Acceptance Checklist 작성 시점
 - **구현 전**: 요구사항 명확화
 - **구현 중**: 진행 상황 추적
 - **구현 후**: 완료 검증
@@ -1080,7 +1080,7 @@ docker-compose ps
 - Health checks configured
 ```
 
-**선택의 순간 #210**: Evidence 항목
+**선택의 순간 #46**: Evidence 항목
 - **대안**: "테스트 통과"
 - **결정**: 구체적 증거 나열
 - **이유**: 
@@ -1103,7 +1103,7 @@ docker-compose ps
 10. Evidence Location (20줄)
 11. Success Metrics (20줄)
 
-**선택의 순간 #211**: Summary vs Detail
+**선택의 순간 #47**: Summary vs Detail
 - **Summary**: 간결하게 (50줄)
 - **Comprehensive**: 상세하게 (500줄+)
 - **결정**: Comprehensive
@@ -1131,7 +1131,7 @@ docker-compose ps
 **Impact**: Project is self-documenting, portfolio-ready, and professional
 ```
 
-**선택의 순간 #212**: Before/After 강조
+**선택의 순간 #48**: Before/After 강조
 - **이유**: 
   - 변화 가시화 (얼마나 개선됐는지)
   - 노력 인정 (3,257줄!)
@@ -1146,64 +1146,64 @@ docker-compose ps
 #### 1. 배포 자동화
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 165 | Grafana 설정 | File Provisioning | 수동, API | 선언적, 재현성 |
-| 166 | Datasource URL | prometheus:9090 | localhost | Docker 네트워크 |
-| 167 | Default datasource | true | false | UX 간소화 |
-| 170 | Volume mount | /etc/grafana/provisioning | 커스텀 | 표준 경로 |
-| 172 | depends_on | prometheus | 없음 | 시작 순서 보장 |
+| 1 | Grafana 설정 | File Provisioning | 수동, API | 선언적, 재현성 |
+| 2 | Datasource URL | prometheus:9090 | localhost | Docker 네트워크 |
+| 3 | Default datasource | true | false | UX 간소화 |
+| 6 | Volume mount | /etc/grafana/provisioning | 커스텀 | 표준 경로 |
+| 8 | depends_on | prometheus | 없음 | 시작 순서 보장 |
 
 #### 2. README 작성 전략
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 173 | 문서 길이 | Comprehensive (600+) | Minimal, Standard | 포트폴리오급 |
-| 175 | 한 줄 요약 | 구체적 (3개 키워드) | 평범 | Voyager X 직접 언급 |
-| 177 | Quick Start 순서 | Docker 먼저 | Local 먼저 | 원커맨드 UX |
-| 178 | 주석 스타일 | 간결한 주석 | 없음, 장황함 | 가독성 + 이해 |
-| 179 | Feature 설명 깊이 | 깊게 (5-10줄) | 얕게 (1줄) | 기술적 깊이 |
+| 9 | 문서 길이 | Comprehensive (600+) | Minimal, Standard | 포트폴리오급 |
+| 11 | 한 줄 요약 | 구체적 (3개 키워드) | 평범 | Voyager X 직접 언급 |
+| 13 | Quick Start 순서 | Docker 먼저 | Local 먼저 | 원커맨드 UX |
+| 14 | 주석 스타일 | 간결한 주석 | 없음, 장황함 | 가독성 + 이해 |
+| 15 | Feature 설명 깊이 | 깊게 (5-10줄) | 얕게 (1줄) | 기술적 깊이 |
 
 #### 3. 다이어그램 디자인
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 180 | 다이어그램 스타일 | ASCII art | 이미지, Mermaid | Git diff, 범용성 |
-| 181 | 박스 스타일 | Unicode box | Single, Double | 현대적, 가독성 |
-| 187 | 다이어그램 레벨 | L2 + L3 혼합 | L1, L3만 | 균형 |
-| 188 | 계층 표현 | 중첩 박스 | 들여쓰기 | 시각적 명확성 |
-| 191 | 플로우차트 스타일 | Step-by-step | Sequence | 간결함 |
+| 16 | 다이어그램 스타일 | ASCII art | 이미지, Mermaid | Git diff, 범용성 |
+| 17 | 박스 스타일 | Unicode box | Single, Double | 현대적, 가독성 |
+| 23 | 다이어그램 레벨 | L2 + L3 혼합 | L1, L3만 | 균형 |
+| 24 | 계층 표현 | 중첩 박스 | 들여쓰기 | 시각적 명확성 |
+| 27 | 플로우차트 스타일 | Step-by-step | Sequence | 간결함 |
 
 #### 4. 기술 문서 작성
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 186 | Architecture 목적 | Balanced | High-level, Deep | 개요+근거 |
-| 189 | Design Decision | 번호+제목+Bullets | 산문 | 스캔 가능성 |
-| 190 | 코드 예제 포함 | C++ 코드 포함 | 텍스트만 | 기술 깊이 증명 |
-| 192 | 정당화 형식 | Req+Just+Align | 나열 | 3단 논리 |
-| 193 | 수치 포함 | 20-30ms overhead | "느리다" | 정량적 분석 |
+| 22 | Architecture 목적 | Balanced | High-level, Deep | 개요+근거 |
+| 25 | Design Decision | 번호+제목+Bullets | 산문 | 스캔 가능성 |
+| 26 | 코드 예제 포함 | C++ 코드 포함 | 텍스트만 | 기술 깊이 증명 |
+| 28 | 정당화 형식 | Req+Just+Align | 나열 | 3단 논리 |
+| 29 | 수치 포함 | 20-30ms overhead | "느리다" | 정량적 분석 |
 
 #### 5. 성능 보고서
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 194 | 보고서 접근 | 종합 분석 | 결과만, 벤치마크만 | 분석 능력 증명 |
-| 196 | 수치 표현 | Estimated Actual | Actual | 정직함 |
-| 197 | 벤치마크 항목 | p50/p95/p99 | p99만 | 전체 분포 |
-| 198 | 성능 분해 | 작업별+비율 | 총 시간 | 병목 파악 |
-| 199 | 테스트 스크립트 | 코드 포함 | 결과만 | 재현성 |
+| 30 | 보고서 접근 | 종합 분석 | 결과만, 벤치마크만 | 분석 능력 증명 |
+| 32 | 수치 표현 | Estimated Actual | Actual | 정직함 |
+| 33 | 벤치마크 항목 | p50/p95/p99 | p99만 | 전체 분포 |
+| 34 | 성능 분해 | 작업별+비율 | 총 시간 | 병목 파악 |
+| 35 | 테스트 스크립트 | 코드 포함 | 결과만 | 재현성 |
 
 #### 6. Demo Video 가이드
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 204 | Video vs Guide | 완벽한 가이드 | 실제 비디오 | 시간 효율 |
-| 205 | 세그먼트 분할 | 6개 (각 1분) | 3개, 10개 | 집중력 + 완성도 |
-| 206 | 명령어 포함 | 정확한 명령어 | 설명만 | 재현 가능 |
-| 207 | Checklist 상세 | 15개 항목 | "준비 완료" | 실수 방지 |
-| 208 | 대안 제공 | 스크린샷도 | 비디오만 | 유연성 |
+| 40 | Video vs Guide | 완벽한 가이드 | 실제 비디오 | 시간 효율 |
+| 41 | 세그먼트 분할 | 6개 (각 1분) | 3개, 10개 | 집중력 + 완성도 |
+| 42 | 명령어 포함 | 정확한 명령어 | 설명만 | 재현 가능 |
+| 43 | Checklist 상세 | 15개 항목 | "준비 완료" | 실수 방지 |
+| 44 | 대안 제공 | 스크린샷도 | 비디오만 | 유연성 |
 
 #### 7. Evidence 작성
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 209 | Checklist 작성 시점 | 구현 후 | 구현 전, 중 | 정확성 |
-| 210 | Evidence 항목 | 구체적 나열 | "통과" | 검증 가능 |
-| 211 | Summary 길이 | Comprehensive | Summary | 충분한 증거 |
-| 212 | Before/After | 변화 강조 | After만 | 개선 가시화 |
+| 45 | Checklist 작성 시점 | 구현 후 | 구현 전, 중 | 정확성 |
+| 46 | Evidence 항목 | 구체적 나열 | "통과" | 검증 가능 |
+| 47 | Summary 길이 | Comprehensive | Summary | 충분한 증거 |
+| 48 | Before/After | 변화 강조 | After만 | 개선 가시화 |
 
 ---
 

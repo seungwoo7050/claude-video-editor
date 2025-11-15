@@ -52,7 +52,7 @@ cd backend
 npm install multer @types/multer sharp
 ```
 
-**선택의 순간 #46**: Multer 선택
+**선택의 순간 #1**: Multer 선택
 - **대안들**: 
   - `express-fileupload`: 간단하지만 기능 제한적
   - `formidable`: 스트림 기반이지만 TypeScript 지원 약함
@@ -87,7 +87,7 @@ getFilePath(filename: string): string {
 }
 ```
 
-**선택의 순간 #47**: Local File Storage
+**선택의 순간 #2**: Local File Storage
 - **대안들**:
   - AWS S3: 프로덕션 준비, 추가 비용
   - MinIO: S3 호환, 복잡도 증가
@@ -113,7 +113,7 @@ const storage = multer.diskStorage({
 });
 ```
 
-**선택의 순간 #48**: Filename Strategy
+**선택의 순간 #3**: Filename Strategy
 - **대안들**:
   - UUID: 충돌 없음, 가독성 낮음
   - Timestamp + Random: 충돌 거의 없음, 정렬 가능
@@ -140,7 +140,7 @@ fileFilter: (_req, file, cb) => {
 }
 ```
 
-**선택의 순간 #49**: File Size Limit
+**선택의 순간 #4**: File Size Limit
 - **고려사항**: 500MB vs 1GB vs 무제한
 - **결정**: 500MB
 - **이유**: 
@@ -159,7 +159,7 @@ app.use('/videos', express.static(storageService.getUploadDir()));
 app.use('/api', uploadRoutes);
 ```
 
-**선택의 순간 #50**: Static File Serving
+**선택의 순간 #5**: Static File Serving
 - **대안들**:
   - nginx: 프로덕션 최적, 개발 복잡
   - CDN: 프로덕션 필수, MVP 불필요
@@ -186,7 +186,7 @@ export interface VideoMetadata {
 }
 ```
 
-**선택의 순간 #51**: Optional Duration
+**선택의 순간 #6**: Optional Duration
 - **이유**: 업로드 시점에는 duration 정보 없음
 - **대안**: 백엔드에서 ffprobe 실행 (업로드 지연)
 - **결정**: Optional로 두고, 재생 시 HTMLVideoElement에서 획득
@@ -194,7 +194,7 @@ export interface VideoMetadata {
 #### Step 2: Upload Hook 구현
 **파일**: `frontend/src/hooks/useVideoUpload.ts`
 
-**선택의 순간 #52**: Upload Progress Tracking
+**선택의 순간 #7**: Upload Progress Tracking
 - **대안들**:
   - fetch API: Progress 추적 불가
   - axios: 라이브러리 추가 필요
@@ -216,7 +216,7 @@ xhr.upload.addEventListener('progress', (e) => {
 #### Step 3: VideoUpload Component
 **파일**: `frontend/src/components/VideoUpload.tsx`
 
-**선택의 순간 #53**: Drag & Drop Implementation
+**선택의 순간 #8**: Drag & Drop Implementation
 - **라이브러리 고려**: react-dropzone
 - **결정**: 네이티브 HTML5 Drag & Drop API
 - **이유**: 
@@ -238,7 +238,7 @@ const handleDrop = useCallback((e: React.DragEvent) => {
 #### Step 4: VideoPlayer Component
 **파일**: `frontend/src/components/VideoPlayer.tsx`
 
-**선택의 순간 #54**: Video Player Library
+**선택의 순간 #9**: Video Player Library
 - **대안들**:
   - react-player: 다양한 소스 지원, 번들 크기 큼
   - video.js: 강력한 기능, 복잡한 설정
@@ -262,7 +262,7 @@ const VideoPlayerComponent = forwardRef<VideoPlayerRef, VideoPlayerProps>(
   }));
 ```
 
-**선택의 순간 #55**: Component API Design
+**선택의 순간 #10**: Component API Design
 - **패턴**: Controlled vs Uncontrolled
 - **결정**: Hybrid approach
   - 내부 상태로 재생 제어 (uncontrolled)
@@ -272,7 +272,7 @@ const VideoPlayerComponent = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 #### Step 5: Timeline Component
 **파일**: `frontend/src/components/Timeline.tsx`
 
-**선택의 순간 #56**: Timeline Rendering
+**선택의 순간 #11**: Timeline Rendering
 - **대안들**:
   - SVG: 선언적, DOM 오버헤드
   - Canvas: 성능 우수, 명령형
@@ -291,7 +291,7 @@ canvas.height = 80 * dpr;
 ctx.scale(dpr, dpr);
 ```
 
-**선택의 순간 #57**: Timeline Interval Logic
+**선택의 순간 #12**: Timeline Interval Logic
 ```typescript
 // 적응형 간격: 영상 길이에 따라 자동 조정
 const interval = duration > 60 ? 10 : duration > 30 ? 5 : 1;
@@ -310,7 +310,7 @@ const [duration, setDuration] = useState(0);
 const playerRef = useRef<VideoPlayerRef>(null);
 ```
 
-**선택의 순간 #58**: State Management
+**선택의 순간 #13**: State Management
 - **대안들**:
   - Redux: 과도한 보일러플레이트
   - Zustand: 추가 의존성
@@ -380,7 +380,7 @@ export class FFmpegService {
 }
 ```
 
-**선택의 순간 #59**: FFmpeg 라이브러리 선택
+**선택의 순간 #14**: FFmpeg 라이브러리 선택
 - **대안들**:
   - `@ffmpeg/ffmpeg` (WASM): 브라우저 실행, 느림
   - `node-fluent-ffmpeg`: Node.js 표준, 사용 편리
@@ -405,7 +405,7 @@ async trimVideo(
   const actualDuration = endTime !== undefined ? endTime - startTime : duration;
 ```
 
-**선택의 순간 #60**: API 인터페이스 설계
+**선택의 순간 #15**: API 인터페이스 설계
 - **고려사항**: `duration` vs `endTime`
 - **결정**: 둘 다 지원
   - `startTime + duration`: 길이 기반 (직관적)
@@ -419,7 +419,7 @@ command = command
   .audioCodec('copy');
 ```
 
-**선택의 순간 #61**: Re-encoding vs Stream Copy
+**선택의 순간 #16**: Re-encoding vs Stream Copy
 - **Re-encoding**:
   - 장점: 정확한 시간 컷
   - 단점: 느림 (1분 영상 30초+), 품질 손실
@@ -457,7 +457,7 @@ async splitVideo(inputPath: string, splitTime: number): Promise<ProcessingResult
 }
 ```
 
-**선택의 순간 #62**: Sequential vs Parallel Split
+**선택의 순간 #17**: Sequential vs Parallel Split
 - **Sequential**: 안전, 느림 (2x time)
 - **Parallel**: 빠름 (1x time), 리소스 사용 증가
 - **결정**: Parallel (`Promise.all`)
@@ -496,7 +496,7 @@ async getVideoMetadata(videoPath: string): Promise<{
 }
 ```
 
-**선택의 순간 #63**: ffprobe vs Manual Parsing
+**선택의 순간 #18**: ffprobe vs Manual Parsing
 - **결정**: ffprobe (FFmpeg 내장 도구)
 - **이유**: 
   - 정확성 보장
@@ -532,7 +532,7 @@ router.post('/trim', async (req: Request, res: Response): Promise<void> => {
     }
 ```
 
-**선택의 순간 #64**: Validation Strategy
+**선택의 순간 #19**: Validation Strategy
 - **Backend Only**: 프론트엔드 우회 가능
 - **Frontend Only**: 백엔드 무방비
 - **Both (결정)**: 이중 검증
@@ -551,7 +551,7 @@ router.post('/trim', async (req: Request, res: Response): Promise<void> => {
     }
 ```
 
-**선택의 순간 #65**: Error Status Codes
+**선택의 순간 #20**: Error Status Codes
 - **400**: Bad Request (클라이언트 오류)
 - **404**: Not Found (리소스 없음)
 - **500**: Internal Server Error (서버 오류)
@@ -622,7 +622,7 @@ export function useVideoEdit() {
   };
 ```
 
-**선택의 순간 #66**: Error Handling Pattern
+**선택의 순간 #21**: Error Handling Pattern
 - **Try-Catch + State**: 에러를 상태로 관리
 - **결정**: 통일된 에러 핸들링
 - **이유**: 
@@ -632,7 +632,7 @@ export function useVideoEdit() {
 #### Step 3: ControlPanel Component
 **파일**: `frontend/src/components/ControlPanel.tsx`
 
-**선택의 순간 #67**: UI Pattern (Tabs vs Dropdown)
+**선택의 순간 #22**: UI Pattern (Tabs vs Dropdown)
 - **Tabs**: 시각적, 상태 유지 명확
 - **Dropdown**: 공간 절약, 단계 추가
 - **결정**: Tabs
@@ -665,7 +665,7 @@ const [mode, setMode] = useState<'trim' | 'split'>('trim');
 </div>
 ```
 
-**선택의 순간 #68**: "Set to Current" Button
+**선택의 순간 #23**: "Set to Current" Button
 ```typescript
 const setTrimStartToCurrent = () => {
   setTrimStart(currentTime);
@@ -717,7 +717,7 @@ cd frontend && npm run build
 #### Step 1: FFmpeg Service 확장
 **파일**: `backend/src/services/ffmpeg.service.ts`
 
-**선택의 순간 #69**: 자막 포맷 선택
+**선택의 순간 #24**: 자막 포맷 선택
 - **대안들**:
   - **ASS/SSA**: 고급 스타일링, 복잡함
   - **WebVTT**: 웹 표준, FFmpeg 지원 제한적
@@ -744,7 +744,7 @@ private generateSRT(subtitles: Subtitle[]): string {
 }
 ```
 
-**선택의 순간 #70**: SRT 시간 포맷
+**선택의 순간 #25**: SRT 시간 포맷
 - **SRT 표준**: `HH:MM:SS,mmm` (콤마!)
 - **흔한 실수**: `HH:MM:SS.mmm` (점)
 - **구현**: 정확한 포맷 준수
@@ -779,7 +779,7 @@ async addSubtitlesAndSpeed(
   }
 ```
 
-**선택의 순간 #71**: Temp File Management
+**선택의 순간 #26**: Temp File Management
 - **문제**: SRT 파일을 어디에 저장?
 - **대안들**:
   - 메모리 스트림: FFmpeg 지원 제한적
@@ -816,7 +816,7 @@ return new Promise((resolve, reject) => {
 });
 ```
 
-**선택의 순간 #72**: 자막 스타일링
+**선택의 순간 #27**: 자막 스타일링
 ```typescript
 // Video filters
 const filters: string[] = [];
@@ -833,7 +833,7 @@ if (subtitlePath) {
 - **FontSize=24**: 가독성 확보
 - **이유**: 일반적인 자막 표준 준수
 
-**선택의 순간 #73**: 속도 변경 구현
+**선택의 순간 #28**: 속도 변경 구현
 ```typescript
 // Video speed filter
 if (speed && speed !== 1.0) {
@@ -866,7 +866,7 @@ export interface Subtitle {
 }
 ```
 
-**선택의 순간 #74**: Subtitle ID 생성
+**선택의 순간 #29**: Subtitle ID 생성
 - **대안들**:
   - Index: 삭제 시 재정렬 필요
   - UUID: 과도하게 무거움
@@ -877,7 +877,7 @@ export interface Subtitle {
 #### Step 2: SubtitleEditor Component
 **파일**: `frontend/src/components/SubtitleEditor.tsx`
 
-**선택의 순간 #75**: Inline Editing
+**선택의 순간 #30**: Inline Editing
 ```typescript
 {editingId === sub.id ? (
   <>
@@ -907,7 +907,7 @@ export interface Subtitle {
 #### Step 3: EditPanel Integration
 **파일**: `frontend/src/components/EditPanel.tsx`
 
-**선택의 순간 #76**: 3-Tab UI 구조
+**선택의 순간 #31**: 3-Tab UI 구조
 ```typescript
 const [mode, setMode] = useState<'trim' | 'split' | 'subtitle'>('trim');
 
@@ -922,7 +922,7 @@ const [mode, setMode] = useState<'trim' | 'split' | 'subtitle'>('trim');
   - 모드 전환 일관성
   - 코드 중복 방지
 
-**선택의 순간 #77**: Speed Slider Range
+**선택의 순간 #32**: Speed Slider Range
 ```typescript
 <input
   type="range"
@@ -976,7 +976,7 @@ const [mode, setMode] = useState<'trim' | 'split' | 'subtitle'>('trim');
 #### Step 1: Migration Schema
 **파일**: `migrations/001_initial_schema.sql`
 
-**선택의 순간 #78**: 데이터베이스 선택
+**선택의 순간 #33**: 데이터베이스 선택
 - **대안들**:
   - **MongoDB**: NoSQL, 스키마 유연
   - **SQLite**: 경량, 파일 기반
@@ -1000,7 +1000,7 @@ CREATE TABLE IF NOT EXISTS projects (
 );
 ```
 
-**선택의 순간 #79**: timeline_state 필드 타입
+**선택의 순간 #34**: timeline_state 필드 타입
 - **대안들**:
   - **TEXT (JSON string)**: 단순, 쿼리 불가
   - **Separate tables**: 정규화, 복잡도 증가
@@ -1025,7 +1025,7 @@ CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
 
-**선택의 순간 #80**: Auto-update Trigger vs Application Logic
+**선택의 순간 #35**: Auto-update Trigger vs Application Logic
 - **Application**: 모든 UPDATE에서 `updated_at` 명시
 - **Trigger**: DB 레벨 자동 처리
 - **결정**: Trigger
@@ -1037,7 +1037,7 @@ CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
 #### Step 2: Database Service
 **파일**: `backend/src/db/database.service.ts`
 
-**선택의 순간 #81**: Connection Pooling
+**선택의 순간 #36**: Connection Pooling
 ```typescript
 this.pool = new Pool({
   host: process.env.POSTGRES_HOST || 'localhost',
@@ -1056,7 +1056,7 @@ this.pool = new Pool({
   - PostgreSQL 기본 max_connections (100)의 20%
   - 여유분 확보
 
-**선택의 순간 #82**: SQL Injection Prevention
+**선택의 순간 #37**: SQL Injection Prevention
 ```typescript
 async query<T = unknown>(text: string, params?: unknown[]): Promise<T[]> {
   const client = await this.pool.connect();
@@ -1077,7 +1077,7 @@ async query<T = unknown>(text: string, params?: unknown[]): Promise<T[]> {
 #### Step 3: Redis Service
 **파일**: `backend/src/db/redis.service.ts`
 
-**선택의 순간 #83**: Redis Lazy Connect
+**선택의 순간 #38**: Redis Lazy Connect
 ```typescript
 this.client = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
@@ -1096,7 +1096,7 @@ this.client = new Redis({
   - Graceful degradation
   - 프로덕션에서는 실제 Redis 연결
 
-**선택의 순간 #84**: Session TTL
+**선택의 순간 #39**: Session TTL
 ```typescript
 private readonly SESSION_TTL = 3600; // 1 hour in seconds
 ```
@@ -1113,7 +1113,7 @@ private readonly SESSION_TTL = 3600; // 1 hour in seconds
 #### Step 1: WebSocket Service
 **파일**: `backend/src/ws/websocket.service.ts`
 
-**선택의 순간 #85**: WebSocket 라이브러리
+**선택의 순간 #40**: WebSocket 라이브러리
 - **대안들**:
   - **socket.io**: 풍부한 기능, 무거움
   - **ws**: 경량, 표준 준수
@@ -1125,7 +1125,7 @@ private readonly SESSION_TTL = 3600; // 1 hour in seconds
   - 추가 의존성 최소
   - Arena60 M1.6 패턴
 
-**선택의 순간 #86**: WebSocket Path
+**선택의 순간 #41**: WebSocket Path
 ```typescript
 this.wss = new WebSocketServer({ server, path: '/ws' });
 ```
@@ -1143,7 +1143,7 @@ export class WebSocketService {
   private pingInterval: NodeJS.Timeout | null = null;
 ```
 
-**선택의 순간 #87**: Client Management Structure
+**선택의 순간 #42**: Client Management Structure
 - **Array**: 순차 검색, 삭제 비효율
 - **Map**: O(1) 조회/삭제
 - **결정**: Map<string, WebSocket>
@@ -1165,7 +1165,7 @@ private startPingInterval(): void {
 }
 ```
 
-**선택의 순간 #88**: Ping Interval
+**선택의 순간 #43**: Ping Interval
 - **대안들**:
   - 10초: 네트워크 부담
   - 60초: 연결 끊김 감지 지연
@@ -1196,7 +1196,7 @@ private broadcast(message: WSMessage): void {
 }
 ```
 
-**선택의 순간 #89**: Unicast vs Broadcast
+**선택의 순간 #44**: Unicast vs Broadcast
 - **Unicast**: 특정 클라이언트에게만
 - **Broadcast**: 모든 클라이언트
 - **결정**: Broadcast
@@ -1240,7 +1240,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 });
 ```
 
-**선택의 순간 #90**: RETURNING * 사용
+**선택의 순간 #45**: RETURNING * 사용
 - **대안**: 별도 SELECT 쿼리
 - **결정**: `RETURNING *`
 - **이유**: 
@@ -1290,7 +1290,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   );
 ```
 
-**선택의 순간 #91**: Partial Update Pattern
+**선택의 순간 #46**: Partial Update Pattern
 - **Full Update**: 모든 필드 필수
 - **Partial Update**: 제공된 필드만 업데이트
 - **결정**: Partial (Dynamic Query)
@@ -1306,7 +1306,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
 #### Step 1: WebSocket Hook
 **파일**: `frontend/src/hooks/useWebSocket.ts`
 
-**선택의 순간 #92**: Auto-reconnection Strategy
+**선택의 순간 #47**: Auto-reconnection Strategy
 ```typescript
 socket.onclose = () => {
   setConnected(false);
@@ -1349,7 +1349,7 @@ export function useWebSocket() {
   };
 ```
 
-**선택의 순간 #93**: Error Handling in onmessage
+**선택의 순간 #48**: Error Handling in onmessage
 - **Throw**: 앱 크래시 위험
 - **Log**: 디버그 도움, 프로덕션 무시
 - **Silent**: 견고성 우선
@@ -1361,7 +1361,7 @@ export function useWebSocket() {
 #### Step 3: ProgressBar Component
 **파일**: `frontend/src/components/ProgressBar.tsx`
 
-**선택의 순간 #94**: Progress Bar Positioning
+**선택의 순간 #49**: Progress Bar Positioning
 ```typescript
 <div className="fixed bottom-4 right-4 w-80 bg-gray-800 ...">
 ```
@@ -1381,7 +1381,7 @@ export function useWebSocket() {
 #### Step 1: HTTP Server for WebSocket
 **파일**: `backend/src/server.ts`
 
-**선택의 순간 #95**: Express + WebSocket Integration
+**선택의 순간 #50**: Express + WebSocket Integration
 ```typescript
 const app = express();
 const server = http.createServer(app);
@@ -1398,7 +1398,7 @@ server.listen(PORT, () => {
 });
 ```
 
-**선택의 순간 #96**: Global WebSocket Service
+**선택의 순간 #51**: Global WebSocket Service
 - **대안들**:
   - Dependency Injection: 복잡도 증가
   - Context Passing: 함수 시그니처 변경
@@ -1423,7 +1423,7 @@ process.on('SIGTERM', async () => {
 });
 ```
 
-**선택의 순간 #97**: Shutdown 순서
+**선택의 순간 #52**: Shutdown 순서
 1. WebSocket 먼저 (새 연결 차단)
 2. Database/Redis (데이터 정합성)
 3. HTTP Server (리소스 정리)
@@ -1450,7 +1450,7 @@ async function initialize() {
 initialize().catch(console.error);
 ```
 
-**선택의 순간 #98**: Migration Failure Handling
+**선택의 순간 #53**: Migration Failure Handling
 - **Strict**: 실패 시 앱 종료
 - **Graceful**: 경고 후 계속
 - **결정**: Graceful (try-catch)
@@ -1499,7 +1499,7 @@ export function useProjects() {
   };
 ```
 
-**선택의 순간 #99**: Hook Return Pattern
+**선택의 순간 #54**: Hook Return Pattern
 - **Tuple**: `[data, loading, error]`
 - **Object**: `{ data, loading, error, createProject, ... }`
 - **결정**: Object
@@ -1511,7 +1511,7 @@ export function useProjects() {
 #### Step 2: ProjectPanel Component
 **파일**: `frontend/src/components/ProjectPanel.tsx`
 
-**선택의 순간 #100**: Save Form UX
+**선택의 순간 #55**: Save Form UX
 ```typescript
 {!showSaveForm ? (
   <button onClick={() => setShowSaveForm(true)}>
@@ -1596,67 +1596,67 @@ curl -X DELETE http://localhost:3001/api/projects/1
 #### 1. 아키텍처 결정
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 50 | Static File Serving | express.static | nginx, CDN | MVP 단순화, 추후 확장 |
-| 58 | State Management | React hooks | Redux, Zustand | 복잡도 낮음, 충분함 |
-| 85 | WebSocket 라이브러리 | ws | socket.io | 경량, 표준 준수 |
-| 86 | WebSocket Path | /ws (동일 서버) | 별도 포트 | CORS 최소화, 배포 단순 |
-| 96 | Global WebSocket | Global variable | DI, Context | MVP 실용주의 |
+| 5 | Static File Serving | express.static | nginx, CDN | MVP 단순화, 추후 확장 |
+| 13 | State Management | React hooks | Redux, Zustand | 복잡도 낮음, 충분함 |
+| 40 | WebSocket 라이브러리 | ws | socket.io | 경량, 표준 준수 |
+| 41 | WebSocket Path | /ws (동일 서버) | 별도 포트 | CORS 최소화, 배포 단순 |
+| 51 | Global WebSocket | Global variable | DI, Context | MVP 실용주의 |
 
 #### 2. 데이터베이스 결정
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 78 | DB 선택 | PostgreSQL | MongoDB, SQLite | Arena60 패턴, JSONB |
-| 79 | timeline_state 타입 | JSONB | TEXT, 별도 테이블 | 유연성 + 쿼리 가능 |
-| 80 | Auto-update | Trigger | Application logic | 실수 방지, 일관성 |
-| 82 | SQL Injection 방지 | Parameterized queries | ORM | 직접 제어, 성능 |
-| 83 | Redis 연결 | Lazy connect | Eager connect | 개발 중 실패 방지 |
+| 33 | DB 선택 | PostgreSQL | MongoDB, SQLite | Arena60 패턴, JSONB |
+| 34 | timeline_state 타입 | JSONB | TEXT, 별도 테이블 | 유연성 + 쿼리 가능 |
+| 35 | Auto-update | Trigger | Application logic | 실수 방지, 일관성 |
+| 37 | SQL Injection 방지 | Parameterized queries | ORM | 직접 제어, 성능 |
+| 38 | Redis 연결 | Lazy connect | Eager connect | 개발 중 실패 방지 |
 
 #### 3. FFmpeg 및 비디오 처리
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 59 | FFmpeg 라이브러리 | fluent-ffmpeg | C API, WASM | 빠른 구현 (Phase 1 목표) |
-| 61 | Encoding 방식 | Codec copy | Re-encoding | 성능 (< 3초), KPI 충족 |
-| 62 | Split 방식 | Parallel | Sequential | 속도 2배, 리소스 감당 가능 |
-| 69 | 자막 포맷 | SRT | ASS, WebVTT | 단순, FFmpeg 완벽 지원 |
-| 73 | 속도 변경 | atempo 필터 | setrate | 피치 보존 |
+| 14 | FFmpeg 라이브러리 | fluent-ffmpeg | C API, WASM | 빠른 구현 (Phase 1 목표) |
+| 16 | Encoding 방식 | Codec copy | Re-encoding | 성능 (< 3초), KPI 충족 |
+| 17 | Split 방식 | Parallel | Sequential | 속도 2배, 리소스 감당 가능 |
+| 24 | 자막 포맷 | SRT | ASS, WebVTT | 단순, FFmpeg 완벽 지원 |
+| 28 | 속도 변경 | atempo 필터 | setrate | 피치 보존 |
 
 #### 4. 파일 관리
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 46 | 업로드 라이브러리 | Multer | express-fileupload | TypeScript 지원, 기능 |
-| 47 | 스토리지 | Local Storage | S3, MinIO | MVP 단순화, 확장 가능 |
-| 48 | Filename 전략 | timestamp-random | UUID, original | 정렬 + 충돌 방지 |
-| 49 | 파일 크기 제한 | 500MB | 1GB, 무제한 | 업로드 시간, 리소스 균형 |
-| 71 | Temp 파일 관리 | Temp + 정리 | 메모리 스트림 | FFmpeg 안정성 |
+| 1 | 업로드 라이브러리 | Multer | express-fileupload | TypeScript 지원, 기능 |
+| 2 | 스토리지 | Local Storage | S3, MinIO | MVP 단순화, 확장 가능 |
+| 3 | Filename 전략 | timestamp-random | UUID, original | 정렬 + 충돌 방지 |
+| 4 | 파일 크기 제한 | 500MB | 1GB, 무제한 | 업로드 시간, 리소스 균형 |
+| 26 | Temp 파일 관리 | Temp + 정리 | 메모리 스트림 | FFmpeg 안정성 |
 
 #### 5. UX/UI 결정
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 53 | Drag & Drop | 네이티브 HTML5 | react-dropzone | 번들 사이즈, 충분함 |
-| 54 | Video Player | HTML5 video | react-player, video.js | 가벼움, 커스터마이징 |
-| 56 | Timeline Rendering | Canvas | SVG, CSS | 60 FPS 목표, 성능 |
-| 67 | UI Pattern | Tabs | Dropdown | 전환 빈도, 명확성 |
-| 68 | 시간 설정 | "Set to Current" | 슬라이더만 | 정밀 조정, 사용성 |
-| 75 | 자막 편집 | Inline | Modal | 빠른 수정, 컨텍스트 유지 |
-| 94 | Progress Bar 위치 | Bottom-right fixed | Top, Modal | 비침습적, 표준 |
+| 8 | Drag & Drop | 네이티브 HTML5 | react-dropzone | 번들 사이즈, 충분함 |
+| 9 | Video Player | HTML5 video | react-player, video.js | 가벼움, 커스터마이징 |
+| 11 | Timeline Rendering | Canvas | SVG, CSS | 60 FPS 목표, 성능 |
+| 22 | UI Pattern | Tabs | Dropdown | 전환 빈도, 명확성 |
+| 23 | 시간 설정 | "Set to Current" | 슬라이더만 | 정밀 조정, 사용성 |
+| 30 | 자막 편집 | Inline | Modal | 빠른 수정, 컨텍스트 유지 |
+| 49 | Progress Bar 위치 | Bottom-right fixed | Top, Modal | 비침습적, 표준 |
 
 #### 6. 에러 처리 및 검증
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 64 | 입력 검증 | Frontend + Backend | Backend only | 보안 + UX |
-| 65 | HTTP Status Codes | REST 표준 | Custom codes | 명확성, 표준 준수 |
-| 66 | 에러 핸들링 | Try-Catch + State | Throw | UI 일관성 |
-| 93 | WebSocket 에러 | Silent catch | Throw, Log | 견고성, 연결 유지 |
-| 98 | Migration 실패 | Graceful continue | Strict exit | 개발 경험, 유연성 |
+| 19 | 입력 검증 | Frontend + Backend | Backend only | 보안 + UX |
+| 20 | HTTP Status Codes | REST 표준 | Custom codes | 명확성, 표준 준수 |
+| 21 | 에러 핸들링 | Try-Catch + State | Throw | UI 일관성 |
+| 48 | WebSocket 에러 | Silent catch | Throw, Log | 견고성, 연결 유지 |
+| 53 | Migration 실패 | Graceful continue | Strict exit | 개발 경험, 유연성 |
 
 #### 7. 성능 최적화
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 52 | Progress Tracking | XMLHttpRequest | fetch, axios | Progress 지원, 네이티브 |
-| 57 | Timeline Interval | 적응형 | 고정 | 가독성 + 정밀도 |
-| 81 | Connection Pool | max: 20 | 10, 50 | Arena60 경험, 균형 |
-| 87 | Client Management | Map | Array | O(1) 조회/삭제 |
-| 88 | Ping Interval | 30초 | 10초, 60초 | 네트워크 부담 vs 감지 |
+| 7 | Progress Tracking | XMLHttpRequest | fetch, axios | Progress 지원, 네이티브 |
+| 12 | Timeline Interval | 적응형 | 고정 | 가독성 + 정밀도 |
+| 36 | Connection Pool | max: 20 | 10, 50 | Arena60 경험, 균형 |
+| 42 | Client Management | Map | Array | O(1) 조회/삭제 |
+| 43 | Ping Interval | 30초 | 10초, 60초 | 네트워크 부담 vs 감지 |
 
 ---
 
