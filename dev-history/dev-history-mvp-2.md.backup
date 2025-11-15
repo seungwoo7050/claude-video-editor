@@ -69,7 +69,7 @@ native/
 └── README.md
 ```
 
-**선택의 순간 #101**: 헤더/소스 분리 전략
+**선택의 순간 #56**: 헤더/소스 분리 전략
 - **대안들**:
   - 단일 파일: 간단, 유지보수 어려움
   - **헤더/소스 분리**: 컴파일 시간 단축, 모듈화
@@ -87,7 +87,7 @@ native/
 #### Step 1: FFmpeg RAII 헤더 작성
 **파일**: `native/include/ffmpeg_raii.h`
 
-**선택의 순간 #102**: 메모리 관리 전략
+**선택의 순간 #57**: 메모리 관리 전략
 - **대안들**:
   - 수동 메모리 관리: 성능 최고, 메모리 누수 위험
   - Shared pointer: 참조 카운팅 오버헤드
@@ -110,7 +110,7 @@ struct AVFormatContextDeleter {
 using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDeleter>;
 ```
 
-**선택의 순간 #103**: Null 체크 위치
+**선택의 순간 #58**: Null 체크 위치
 - **Deleter 내부**: 방어적 프로그래밍
 - **호출 전**: 성능 우선
 - **결정**: Deleter 내부
@@ -129,7 +129,7 @@ using AVFormatContextPtr = std::unique_ptr<AVFormatContext, AVFormatContextDelet
 5. `SwsContextDeleter` - RGB 변환
 6. `AVBufferDeleter` - 일반 버퍼
 
-**선택의 순간 #104**: Helper Functions
+**선택의 순간 #59**: Helper Functions
 ```cpp
 inline AVFramePtr make_av_frame() {
   return AVFramePtr(av_frame_alloc());
@@ -147,7 +147,7 @@ inline AVFramePtr make_av_frame() {
 #### Step 1: Memory Pool 헤더 설계
 **파일**: `native/include/memory_pool.h`
 
-**선택의 순간 #105**: Pool 구조
+**선택의 순간 #60**: Pool 구조
 - **대안들**:
   - Lock-free queue: 복잡, 고성능
   - **Mutex + Vector**: 간단, 충분한 성능
@@ -180,7 +180,7 @@ private:
 };
 ```
 
-**선택의 순간 #106**: Initial Pool Size
+**선택의 순간 #61**: Initial Pool Size
 - **10 frames**: 경험적 선택
 - **이유**:
   - AVFrame 크기: ~수백 바이트 (메타데이터만)
@@ -190,7 +190,7 @@ private:
 #### Step 2: Memory Pool 구현
 **파일**: `native/src/memory_pool.cpp`
 
-**선택의 순간 #107**: Frame Reset 전략
+**선택의 순간 #62**: Frame Reset 전략
 ```cpp
 AVFramePtr AVFramePool::acquire() {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -214,7 +214,7 @@ AVFramePtr AVFramePool::acquire() {
 }
 ```
 
-**선택의 순간 #108**: Pool Exhaustion 처리
+**선택의 순간 #63**: Pool Exhaustion 처리
 - **Block until available**: 데드락 위험
 - **Return null**: 에러 처리 복잡
 - **Allocate new**: 자동 확장
@@ -231,7 +231,7 @@ AVFramePtr AVFramePool::acquire() {
 #### Step 1: Build Configuration
 **파일**: `native/binding.gyp`
 
-**선택의 순간 #109**: C++ Standard
+**선택의 순간 #64**: C++ Standard
 ```gyp
 "cflags_cc": [ "-std=c++17", "-Wall", "-Wextra" ]
 ```
@@ -245,7 +245,7 @@ AVFramePtr AVFramePool::acquire() {
   - Structured bindings (if needed)
   - GCC 7+, Clang 5+ 지원 (Alpine에서 사용 가능)
 
-**선택의 순간 #110**: Warning Flags
+**선택의 순간 #65**: Warning Flags
 - **-Wall -Wextra**: 엄격한 경고
 - **결정**: 활성화
 - **이유**:
@@ -267,7 +267,7 @@ AVFramePtr AVFramePool::acquire() {
 ]
 ```
 
-**선택의 순간 #111**: 동적 vs 정적 링크
+**선택의 순간 #66**: 동적 vs 정적 링크
 - **동적 링크**: 유연성, 업데이트 용이
 - **정적 링크**: 독립 실행, 크기 증가
 - **결정**: 동적 링크
@@ -283,7 +283,7 @@ AVFramePtr AVFramePool::acquire() {
 #### Step 1: 기본 구조
 **파일**: `native/src/video_processor.cpp`
 
-**선택의 순간 #112**: N-API vs NAN
+**선택의 순간 #67**: N-API vs NAN
 - **NAN (Native Abstractions for Node.js)**:
   - Node.js 버전 간 호환성
   - 추가 의존성
@@ -305,7 +305,7 @@ AVFramePtr AVFramePool::acquire() {
 using namespace vrewcraft;
 ```
 
-**선택의 순간 #113**: ObjectWrap Pattern
+**선택의 순간 #68**: ObjectWrap Pattern
 ```cpp
 class ThumbnailExtractorWrapper : public Napi::ObjectWrap<ThumbnailExtractorWrapper> {
 public:
@@ -320,7 +320,7 @@ private:
 };
 ```
 
-**선택의 순간 #114**: 소유권 관리
+**선택의 순간 #69**: 소유권 관리
 - **Raw pointer**: 수동 관리 필요
 - **Shared pointer**: 불필요한 참조 카운팅
 - **Unique pointer**: 명확한 소유권
@@ -331,7 +331,7 @@ private:
   - 이동 의미론
 
 #### Step 2: 에러 처리
-**선택의 순간 #115**: Exception Handling
+**선택의 순간 #70**: Exception Handling
 
 ```cpp
 "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ]
@@ -362,7 +362,7 @@ try {
 #### Step 1: package.json 작성
 **파일**: `native/package.json`
 
-**선택의 순간 #116**: NPM Scripts
+**선택의 순간 #71**: NPM Scripts
 ```json
 {
   "scripts": {
@@ -374,7 +374,7 @@ try {
 }
 ```
 
-**선택의 순간 #117**: Main Entry Point
+**선택의 순간 #72**: Main Entry Point
 ```json
 {
   "main": "build/Release/video_processor.node"
@@ -392,7 +392,7 @@ try {
 #### Step 1: 기본 테스트
 **파일**: `native/test/test.js`
 
-**선택의 순간 #118**: 테스트 프레임워크
+**선택의 순간 #73**: 테스트 프레임워크
 - **Mocha/Chai**: 풍부한 기능
 - **Jest**: 모던 테스팅
 - **Plain Node.js**: 의존성 없음
@@ -422,7 +422,7 @@ if (version !== '2.0.0') {
 }
 ```
 
-**선택의 순간 #119**: 에러 처리 테스트
+**선택의 순간 #74**: 에러 처리 테스트
 ```javascript
 // Test error handling
 try {
@@ -452,7 +452,7 @@ try {
 #### Step 1: 헤더 인터페이스 설계
 **파일**: `native/include/thumbnail_extractor.h`
 
-**선택의 순간 #120**: API 디자인
+**선택의 순간 #75**: API 디자인
 ```cpp
 std::vector<uint8_t> extract_thumbnail(
   const std::string& video_path,
@@ -462,7 +462,7 @@ std::vector<uint8_t> extract_thumbnail(
 );
 ```
 
-**선택의 순간 #121**: 반환 타입
+**선택의 순간 #76**: 반환 타입
 - **Raw buffer**: 메모리 관리 복잡
 - **`std::vector<uint8_t>`**: RAII, 안전
 - **Custom class**: 과도한 추상화
@@ -483,7 +483,7 @@ struct Stats {
 Stats get_stats() const;
 ```
 
-**선택의 순간 #122**: Thread Safety
+**선택의 순간 #77**: Thread Safety
 ```cpp
 private:
   mutable std::mutex stats_mutex_;
@@ -503,7 +503,7 @@ private:
 #### Step 1: VideoContext 구조체
 **파일**: `native/src/thumbnail_extractor.cpp`
 
-**선택의 순간 #123**: Context 관리
+**선택의 순간 #78**: Context 관리
 ```cpp
 struct VideoContext {
   AVFormatContextPtr format_ctx;
@@ -533,7 +533,7 @@ if (ctx.video_stream_index == -1) {
 }
 ```
 
-**선택의 순간 #124**: 첫 번째 vs 최적 스트림
+**선택의 순간 #79**: 첫 번째 vs 최적 스트림
 - **첫 번째 비디오 스트림**: 단순, 빠름
 - **최고 해상도 스트림**: 복잡, 품질 우선
 - **결정**: 첫 번째 스트림
@@ -547,7 +547,7 @@ if (ctx.video_stream_index == -1) {
 ### Phase 2.1.3: Seeking 및 Decoding
 
 #### Step 1: Timestamp Seeking
-**선택의 순간 #125**: Seek 전략
+**선택의 순간 #80**: Seek 전략
 
 ```cpp
 int64_t seek_target = static_cast<int64_t>(timestamp_sec / av_q2d(ctx.time_base));
@@ -558,7 +558,7 @@ if (av_seek_frame(ctx.format_ctx.get(), ctx.video_stream_index,
 }
 ```
 
-**선택의 순간 #126**: AVSEEK_FLAG_BACKWARD
+**선택의 순간 #81**: AVSEEK_FLAG_BACKWARD
 - **AVSEEK_FLAG_BACKWARD**: Keyframe 이전으로
 - **AVSEEK_FLAG_ANY**: 정확한 위치
 - **결정**: `AVSEEK_FLAG_BACKWARD`
@@ -578,7 +578,7 @@ avcodec_flush_buffers(ctx.codec_ctx.get());
   - 정확한 디코딩 보장
 
 #### Step 3: Frame Decoding Loop
-**선택의 순간 #127**: Decode Strategy
+**선택의 순간 #82**: Decode Strategy
 
 ```cpp
 AVFramePtr frame = frame_pool_->acquire();  // From memory pool
@@ -603,7 +603,7 @@ while (av_read_frame(ctx.format_ctx.get(), packet.get()) >= 0) {
 }
 ```
 
-**선택의 순간 #128**: 첫 프레임 vs 정확한 타임스탬프
+**선택의 순간 #83**: 첫 프레임 vs 정확한 타임스탬프
 - **첫 번째 디코딩 프레임**: 빠름, 부정확
 - **타임스탬프 확인**: 정확, 느림
 - **결정**: 첫 번째 프레임
@@ -617,7 +617,7 @@ while (av_read_frame(ctx.format_ctx.get(), packet.get()) >= 0) {
 ### Phase 2.1.4: RGB 변환
 
 #### Step 1: Scaling Context 생성
-**선택의 순간 #129**: Scaling Algorithm
+**선택의 순간 #84**: Scaling Algorithm
 
 ```cpp
 SwsContextPtr sws_ctx(sws_getContext(
@@ -628,7 +628,7 @@ SwsContextPtr sws_ctx(sws_getContext(
 ));
 ```
 
-**선택의 순간 #130**: 스케일링 알고리즘 선택
+**선택의 순간 #85**: 스케일링 알고리즘 선택
 - **SWS_FAST_BILINEAR**: 가장 빠름, 품질 낮음
 - **SWS_BILINEAR**: 균형, 충분한 품질
 - **SWS_BICUBIC**: 고품질, 느림
@@ -640,7 +640,7 @@ SwsContextPtr sws_ctx(sws_getContext(
   - 시각적으로 충분한 품질
 
 #### Step 2: RGB24 변환
-**선택의 순간 #131**: 픽셀 포맷
+**선택의 순간 #86**: 픽셀 포맷
 
 - **RGB24**: 24-bit, 알파 없음
 - **RGBA**: 32-bit, 알파 채널
@@ -664,7 +664,7 @@ sws_scale(
 ### Phase 2.1.5: 성능 측정
 
 #### Step 1: 타이밍 수집
-**선택의 순간 #132**: 타이머 선택
+**선택의 순간 #87**: 타이머 선택
 
 ```cpp
 #include <chrono>
@@ -677,7 +677,7 @@ auto end_time = std::chrono::high_resolution_clock::now();
 double duration_ms = std::chrono::duration<double, std::milli>(end_time - start_time).count();
 ```
 
-**선택의 순간 #133**: 타이머 정밀도
+**선택의 순간 #88**: 타이머 정밀도
 - **std::chrono::high_resolution_clock**: 최고 정밀도
 - **std::chrono::steady_clock**: 단조성 보장
 - **결정**: `high_resolution_clock`
@@ -696,7 +696,7 @@ double duration_ms = std::chrono::duration<double, std::milli>(end_time - start_
 }
 ```
 
-**선택의 순간 #134**: Lock Granularity
+**선택의 순간 #89**: Lock Granularity
 - **Fine-grained**: 통계별 mutex
 - **Coarse-grained**: 전체 통계 단일 mutex
 - **결정**: 단일 mutex
@@ -712,7 +712,7 @@ double duration_ms = std::chrono::duration<double, std::milli>(end_time - start_
 #### Step 1: Native Video Service
 **파일**: `backend/src/services/native-video.service.ts`
 
-**선택의 순간 #135**: Service Pattern
+**선택의 순간 #90**: Service Pattern
 
 ```typescript
 class NativeVideoService {
@@ -745,7 +745,7 @@ class NativeVideoService {
 }
 ```
 
-**선택의 순간 #136**: Graceful Degradation
+**선택의 순간 #91**: Graceful Degradation
 - **Throw on failure**: 앱 시작 불가
 - **Warn and continue**: 기능 비활성화
 - **결정**: Warn and continue
@@ -757,7 +757,7 @@ class NativeVideoService {
 #### Step 2: Thumbnail Routes
 **파일**: `backend/src/routes/thumbnail.ts`
 
-**선택의 순간 #137**: 에러 응답
+**선택의 순간 #92**: 에러 응답
 
 ```typescript
 if (!nativeVideoService.isAvailable()) {
@@ -768,7 +768,7 @@ if (!nativeVideoService.isAvailable()) {
 }
 ```
 
-**선택의 순간 #138**: HTTP Status Code
+**선택의 순간 #93**: HTTP Status Code
 - **500**: Internal Server Error
 - **503**: Service Unavailable
 - **결정**: 503
@@ -790,7 +790,7 @@ if (!nativeVideoService.isAvailable()) {
 #### Step 1: 반환 구조체 설계
 **파일**: `native/include/metadata_analyzer.h`
 
-**선택의 순간 #139**: 데이터 구조 계층
+**선택의 순간 #94**: 데이터 구조 계층
 
 ```cpp
 struct VideoMetadata {
@@ -800,7 +800,7 @@ struct VideoMetadata {
 };
 ```
 
-**선택의 순간 #140**: 벡터 vs 단일 스트림
+**선택의 순간 #95**: 벡터 vs 단일 스트림
 - **단일 스트림**: 단순, 멀티스트림 처리 불가
 - **벡터**: 유연, 모든 스트림 처리
 - **결정**: `std::vector`
@@ -816,7 +816,7 @@ struct VideoMetadata {
 #### Step 1: Format 정보 추출
 **파일**: `native/src/metadata_analyzer.cpp`
 
-**선택의 순간 #141**: Duration 계산
+**선택의 순간 #96**: Duration 계산
 
 ```cpp
 metadata.format.duration_sec = fmt_ctx->duration > 0 
@@ -824,7 +824,7 @@ metadata.format.duration_sec = fmt_ctx->duration > 0
   : 0.0;
 ```
 
-**선택의 순간 #142**: AV_TIME_BASE 사용
+**선택의 순간 #97**: AV_TIME_BASE 사용
 - **AV_TIME_BASE**: FFmpeg 표준 (1,000,000)
 - **Stream time_base**: 스트림별 다름
 - **결정**: `AV_TIME_BASE` (포맷 레벨)
@@ -834,7 +834,7 @@ metadata.format.duration_sec = fmt_ctx->duration > 0
   - 표준 준수
 
 #### Step 2: 스트림 반복 및 분류
-**선택의 순간 #143**: 스트림 타입 확인
+**선택의 순간 #98**: 스트림 타입 확인
 
 ```cpp
 for (unsigned int i = 0; i < fmt_ctx->nb_streams; i++) {
@@ -862,7 +862,7 @@ for (unsigned int i = 0; i < fmt_ctx->nb_streams; i++) {
 
 ### Phase 2.2.3: FPS 계산
 
-**선택의 순간 #144**: FPS 소스 우선순위
+**선택의 순간 #99**: FPS 소스 우선순위
 
 ```cpp
 if (stream->avg_frame_rate.den > 0) {
@@ -874,7 +874,7 @@ if (stream->avg_frame_rate.den > 0) {
 }
 ```
 
-**선택의 순간 #145**: avg_frame_rate vs r_frame_rate
+**선택의 순간 #100**: avg_frame_rate vs r_frame_rate
 - **avg_frame_rate**: 실제 평균 FPS (가변 프레임레이트 대응)
 - **r_frame_rate**: 명목 FPS (컨테이너 메타데이터)
 - **결정**: avg_frame_rate 우선
@@ -887,7 +887,7 @@ if (stream->avg_frame_rate.den > 0) {
 
 ### Phase 2.2.4: Channel Layout 호환성
 
-**선택의 순간 #146**: FFmpeg API 버전 호환성
+**선택의 순간 #101**: FFmpeg API 버전 호환성
 
 ```cpp
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
@@ -902,7 +902,7 @@ if (stream->avg_frame_rate.den > 0) {
 #endif
 ```
 
-**선택의 순간 #147**: API 버전 분기
+**선택의 순간 #102**: API 버전 분기
 - **최신 API만**: 단순, 호환성 제한
 - **조건부 컴파일**: 복잡, 광범위 호환
 - **결정**: 조건부 컴파일
@@ -915,7 +915,7 @@ if (stream->avg_frame_rate.den > 0) {
 
 ### Phase 2.2.5: Codec 지원 확인
 
-**선택의 순간 #148**: Static Method
+**선택의 순간 #103**: Static Method
 
 ```cpp
 bool MetadataAnalyzer::is_codec_supported(const std::string& codec_name) {
@@ -945,7 +945,7 @@ bool MetadataAnalyzer::is_codec_supported(const std::string& codec_name) {
 #### Step 1: Metrics Service 구조
 **파일**: `backend/src/services/metrics.service.ts`
 
-**선택의 순간 #149**: Metrics Library
+**선택의 순간 #104**: Metrics Library
 - **prom-client**: Node.js 공식 Prometheus 클라이언트
 - **Custom implementation**: 제어 가능, 복잡
 - **결정**: `prom-client`
@@ -955,7 +955,7 @@ bool MetadataAnalyzer::is_codec_supported(const std::string& codec_name) {
   - 검증된 라이브러리
 
 #### Step 2: Metric Types 선택
-**선택의 순간 #150**: Thumbnail Duration Metric
+**선택의 순간 #105**: Thumbnail Duration Metric
 
 ```typescript
 this.thumbnailDuration = new Histogram({
@@ -967,7 +967,7 @@ this.thumbnailDuration = new Histogram({
 });
 ```
 
-**선택의 순간 #151**: Bucket 설계
+**선택의 순간 #106**: Bucket 설계
 - **Linear buckets**: 균등 간격
 - **Exponential buckets**: 지수 증가
 - **Custom buckets**: 세밀한 제어
@@ -977,7 +977,7 @@ this.thumbnailDuration = new Histogram({
   - 0.01~0.05ms 범위 상세 (목표 범위)
   - 0.1~10s 범위 넓게 (에러 케이스)
 
-**선택의 순간 #152**: Label 전략
+**선택의 순간 #107**: Label 전략
 ```typescript
 labelNames: ['status']  // 'success' or 'error'
 ```
@@ -993,7 +993,7 @@ labelNames: ['status']  // 'success' or 'error'
 
 ### Phase 2.3.2: Default Metrics
 
-**선택의 순간 #153**: collectDefaultMetrics
+**선택의 순간 #108**: collectDefaultMetrics
 
 ```typescript
 collectDefaultMetrics({ 
@@ -1014,7 +1014,7 @@ collectDefaultMetrics({
 ### Phase 2.3.3: Metrics 수집
 
 #### Step 1: Thumbnail 메트릭
-**선택의 순간 #154**: 메트릭 기록 위치
+**선택의 순간 #109**: 메트릭 기록 위치
 
 ```typescript
 // In thumbnail route
@@ -1038,7 +1038,7 @@ try {
 }
 ```
 
-**선택의 순간 #155**: Try-Finally vs Try-Catch
+**선택의 순간 #110**: Try-Finally vs Try-Catch
 - **Try-Finally**: 항상 실행
 - **Try-Catch**: 에러 처리
 - **결정**: Try-Catch (성공/실패 분리)
@@ -1053,7 +1053,7 @@ try {
 #### Step 1: Dashboard 구조
 **파일**: `monitoring/grafana/dashboards/vrewcraft-phase2.json`
 
-**선택의 순간 #156**: Panel Layout
+**선택의 순간 #111**: Panel Layout
 
 ```
 Row 1: Thumbnail Performance | Metadata Performance
@@ -1063,7 +1063,7 @@ Row 4: API Latency (full width)
 Row 5: KPI Table | System Status
 ```
 
-**선택의 순간 #157**: Grid Size
+**선택의 순간 #112**: Grid Size
 - **12-column grid**: Grafana 표준
 - **Panel width**: 12 (full), 8, 6, 4
 - **결정**: 대부분 6 (half width)
@@ -1073,7 +1073,7 @@ Row 5: KPI Table | System Status
   - 모바일은 자동 스택
 
 #### Step 2: Percentile Query
-**선택의 순간 #158**: Histogram Quantile
+**선택의 순간 #113**: Histogram Quantile
 
 ```json
 {
@@ -1082,7 +1082,7 @@ Row 5: KPI Table | System Status
 }
 ```
 
-**선택의 순간 #159**: Time Window
+**선택의 순간 #114**: Time Window
 - **[1m]**: 반응 빠름, 노이즈 많음
 - **[5m]**: 균형점
 - **[15m]**: 안정적, 반응 느림
@@ -1096,7 +1096,7 @@ Row 5: KPI Table | System Status
 
 ### Phase 2.3.5: Threshold & Alerts
 
-**선택의 순간 #160**: Threshold 설정
+**선택의 순간 #115**: Threshold 설정
 
 ```json
 {
@@ -1119,7 +1119,7 @@ Row 5: KPI Table | System Status
   - 빨간색 강조
   - Alert 조건 명확
 
-**선택의 순간 #161**: Alert vs Visual Only
+**선택의 순간 #116**: Alert vs Visual Only
 - **Grafana Alert**: PagerDuty, Slack 통합
 - **Visual threshold**: 대시보드만
 - **결정**: Visual (Alert 선택사항)
@@ -1135,7 +1135,7 @@ Row 5: KPI Table | System Status
 #### Step 1: Thumbnail Load Test
 **파일**: `native/test/load-tests/thumbnail-load-test.js`
 
-**선택의 순간 #162**: Concurrency Control
+**선택의 순간 #117**: Concurrency Control
 
 ```javascript
 const CONCURRENT = parseInt(process.env.CONCURRENT || '10', 10);
@@ -1152,7 +1152,7 @@ for (let i = 0; i < timestamps.length; i += CONCURRENT) {
 }
 ```
 
-**선택의 순간 #163**: Batch vs Full Parallel
+**선택의 순간 #118**: Batch vs Full Parallel
 - **Full parallel (Promise.all 100개)**: 빠름, 리소스 폭증
 - **Sequential**: 느림, 안전
 - **Batch (10개씩)**: 균형
@@ -1163,7 +1163,7 @@ for (let i = 0; i < timestamps.length; i += CONCURRENT) {
   - 실제 트래픽 패턴 시뮬레이션
 
 #### Step 2: Percentile 계산
-**선택의 순간 #164**: 정렬 vs 라이브러리
+**선택의 순간 #119**: 정렬 vs 라이브러리
 
 ```javascript
 const durations = successfulResults.map(r => r.duration).sort((a, b) => a - b);
@@ -1190,72 +1190,72 @@ const p99 = durations[Math.floor(durations.length * 0.99)];
 #### 1. 메모리 관리 및 RAII
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 102 | 메모리 관리 전략 | unique_ptr + custom deleter | 수동, shared_ptr | 제로 오버헤드, 안전 |
-| 103 | Null 체크 위치 | Deleter 내부 | 호출 전 | 안전성, 방어적 프로그래밍 |
-| 105 | Memory Pool 구조 | Mutex + Vector | Lock-free queue | 단순성, 충분한 성능 |
-| 106 | Pool 초기 크기 | 10 frames | 5, 20 | 경험적 균형점 |
-| 108 | Pool Exhaustion | 새로 할당 | Block, null 반환 | Graceful degradation |
+| 57 | 메모리 관리 전략 | unique_ptr + custom deleter | 수동, shared_ptr | 제로 오버헤드, 안전 |
+| 58 | Null 체크 위치 | Deleter 내부 | 호출 전 | 안전성, 방어적 프로그래밍 |
+| 60 | Memory Pool 구조 | Mutex + Vector | Lock-free queue | 단순성, 충분한 성능 |
+| 61 | Pool 초기 크기 | 10 frames | 5, 20 | 경험적 균형점 |
+| 63 | Pool Exhaustion | 새로 할당 | Block, null 반환 | Graceful degradation |
 
 #### 2. C++ 설계 및 구현
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 101 | 헤더/소스 분리 | 분리 | 단일 파일 | 컴파일 시간, 모듈화 |
-| 109 | C++ 표준 | C++17 | C++11, C++20 | Modern, 안정적 |
-| 110 | Warning Flags | -Wall -Wextra | None | 버그 조기 발견 |
-| 121 | 반환 타입 | std::vector<uint8_t> | Raw buffer | RAII, 안전 |
-| 122 | Thread Safety | mutable mutex | 별도 객체 | const correctness |
+| 56 | 헤더/소스 분리 | 분리 | 단일 파일 | 컴파일 시간, 모듈화 |
+| 64 | C++ 표준 | C++17 | C++11, C++20 | Modern, 안정적 |
+| 65 | Warning Flags | -Wall -Wextra | None | 버그 조기 발견 |
+| 76 | 반환 타입 | std::vector<uint8_t> | Raw buffer | RAII, 안전 |
+| 77 | Thread Safety | mutable mutex | 별도 객체 | const correctness |
 
 #### 3. N-API 통합
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 112 | N-API vs NAN | N-API | NAN | 공식 표준, ABI 안정 |
-| 113 | ObjectWrap | 사용 | Raw functions | OOP, 상태 관리 |
-| 114 | 소유권 관리 | unique_ptr | Raw, shared_ptr | 명확한 소유권 |
-| 115 | Exception Handling | NAPI_DISABLE_CPP_EXCEPTIONS | C++ exceptions | 성능, 명시적 변환 |
+| 67 | N-API vs NAN | N-API | NAN | 공식 표준, ABI 안정 |
+| 68 | ObjectWrap | 사용 | Raw functions | OOP, 상태 관리 |
+| 69 | 소유권 관리 | unique_ptr | Raw, shared_ptr | 명확한 소유권 |
+| 70 | Exception Handling | NAPI_DISABLE_CPP_EXCEPTIONS | C++ exceptions | 성능, 명시적 변환 |
 
 #### 4. FFmpeg API 사용
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 111 | 링크 방식 | 동적 링크 | 정적 링크 | 유연성, 크기 |
-| 124 | 스트림 선택 | 첫 번째 | 최고 해상도 | 단순성, 실용성 |
-| 126 | Seek Flag | BACKWARD | ANY | Keyframe, 성능 |
-| 128 | Frame 선택 | 첫 프레임 | 정확한 타임스탬프 | 성능 우선 |
-| 130 | 스케일 알고리즘 | BILINEAR | BICUBIC, LANCZOS | 균형점 |
+| 66 | 링크 방식 | 동적 링크 | 정적 링크 | 유연성, 크기 |
+| 79 | 스트림 선택 | 첫 번째 | 최고 해상도 | 단순성, 실용성 |
+| 81 | Seek Flag | BACKWARD | ANY | Keyframe, 성능 |
+| 83 | Frame 선택 | 첫 프레임 | 정확한 타임스탬프 | 성능 우선 |
+| 85 | 스케일 알고리즘 | BILINEAR | BICUBIC, LANCZOS | 균형점 |
 
 #### 5. 비디오 처리 최적화
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 131 | 픽셀 포맷 | RGB24 | RGBA, BGR24 | 웹 표준, 크기 |
-| 142 | Duration 계산 | AV_TIME_BASE | Stream time_base | 표준 준수 |
-| 143 | 스트림 타입 | Video + Audio | 모든 타입 | 실용성 |
-| 145 | FPS 소스 | avg_frame_rate 우선 | r_frame_rate | 실제 속도 반영 |
-| 147 | API 버전 호환 | 조건부 컴파일 | 최신만 | 광범위 호환 |
+| 86 | 픽셀 포맷 | RGB24 | RGBA, BGR24 | 웹 표준, 크기 |
+| 97 | Duration 계산 | AV_TIME_BASE | Stream time_base | 표준 준수 |
+| 98 | 스트림 타입 | Video + Audio | 모든 타입 | 실용성 |
+| 100 | FPS 소스 | avg_frame_rate 우선 | r_frame_rate | 실제 속도 반영 |
+| 102 | API 버전 호환 | 조건부 컴파일 | 최신만 | 광범위 호환 |
 
 #### 6. 성능 측정
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 133 | 타이머 선택 | high_resolution_clock | steady_clock | 정밀도 |
-| 134 | Lock Granularity | 단일 mutex | Fine-grained | 단순성, 충분 |
-| 151 | Histogram Bucket | Custom | Linear, Exponential | 목표 범위 맞춤 |
-| 152 | Label 전략 | 최소 (status) | 다수 레이블 | 카디널리티 제어 |
-| 159 | Time Window | [5m] | [1m], [15m] | 균형점 |
+| 88 | 타이머 선택 | high_resolution_clock | steady_clock | 정밀도 |
+| 89 | Lock Granularity | 단일 mutex | Fine-grained | 단순성, 충분 |
+| 106 | Histogram Bucket | Custom | Linear, Exponential | 목표 범위 맞춤 |
+| 107 | Label 전략 | 최소 (status) | 다수 레이블 | 카디널리티 제어 |
+| 114 | Time Window | [5m] | [1m], [15m] | 균형점 |
 
 #### 7. Backend 통합
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 135 | Service Pattern | Class singleton | Functions | 상태 관리 |
-| 136 | 로딩 실패 처리 | Warn + continue | Throw | Graceful degradation |
-| 138 | HTTP Status | 503 | 500 | 일시적 상태 |
-| 155 | Error Tracking | Try-Catch 분리 | Try-Finally | 성공/실패 구분 |
+| 90 | Service Pattern | Class singleton | Functions | 상태 관리 |
+| 91 | 로딩 실패 처리 | Warn + continue | Throw | Graceful degradation |
+| 93 | HTTP Status | 503 | 500 | 일시적 상태 |
+| 110 | Error Tracking | Try-Catch 분리 | Try-Finally | 성공/실패 구분 |
 
 #### 8. 모니터링 및 테스트
 | # | 주제 | 선택 | 대안 | 이유 |
 |---|------|------|------|------|
-| 149 | Metrics Library | prom-client | Custom | 표준, 검증됨 |
-| 153 | Default Metrics | 활성화 | 비활성화 | 시스템 건강 |
-| 160 | Threshold | KPI 기반 (50ms) | 임의 값 | 명확한 기준 |
-| 163 | Load Test 방식 | Batch (10개) | Full parallel | 리소스 제어 |
-| 164 | Percentile 계산 | 정렬 | 라이브러리 | 단순성 |
+| 104 | Metrics Library | prom-client | Custom | 표준, 검증됨 |
+| 108 | Default Metrics | 활성화 | 비활성화 | 시스템 건강 |
+| 115 | Threshold | KPI 기반 (50ms) | 임의 값 | 명확한 기준 |
+| 118 | Load Test 방식 | Batch (10개) | Full parallel | 리소스 제어 |
+| 119 | Percentile 계산 | 정렬 | 라이브러리 | 단순성 |
 
 ---
 
